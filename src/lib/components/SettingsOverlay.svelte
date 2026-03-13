@@ -59,7 +59,7 @@
         box-shadow: 0 0 40px var(--color-primary);
         position: relative;
         overflow: hidden;
-        background-color: rgba(255, 255, 255, 0.3);
+        /* background-color: rgba(255, 255, 255, 0.3); */
         background-blend-mode: lighten;
     }
 
@@ -75,12 +75,12 @@
         margin: 0 1.5rem 1.5rem 1.5rem;
         padding: 2rem;
         /* background: rgba(255, 255, 255, 0.7); */
-        backdrop-filter: blur(0);
+        /* backdrop-filter: blur(0); */
         border-radius: 20px;
         flex-grow: 1;
         display: flex;
         flex-direction: column;
-        gap: 2rem;
+        gap: 5rem;
     }
 
     .setting-item {
@@ -93,7 +93,8 @@
     label {
         font-weight: bold;
         font-size: 1.2rem;
-        color: #000;
+        color: var(--color-primary);
+        text-shadow: 1px 1px 0px var(--color-primary), -1px -1px 0px var(--color-white);
         font-family: sans-serif;
     }
 
@@ -104,28 +105,26 @@
     }
 
     .toggle-btn {
+       margin: 1rem 1.5rem 1.5rem 1.5rem;
+        padding: 1.2rem;
         background: var(--color-primary);
         color: var(--color-white);
         border: 2px solid var(--color-white);
-        padding: 0.8rem;
-        border-radius: 10px;
-        font-weight: bold;
+        border-radius: 50px;
         cursor: pointer;
+        font-weight: bold;
+        font-size: 1.2rem;
     }
-
-    .toggle-btn:hover {
-        background: var(--color-primary);
-        color: var(--color-white);
+        .toggle-btn:hover {
+    background: var(--color-white);
+        color: var(--color-primary);
         border: 2px solid var(--color-primary);
     }
-    .toggle-btn.active {
-        /* background: var(--color-primary);
-        color: var(--color-white); */
+    .toggle-btn:hover.active{
         background: var(--color-white);
         color: var(--color-primary);
         border: 2px solid var(--color-primary);
     }
-
     .back-btn {
         margin: 1rem 1.5rem 1.5rem 1.5rem;
         padding: 1.2rem;
