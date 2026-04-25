@@ -39,7 +39,13 @@ export class Preloader extends Scene
         this.load.audio('theme', 'Whiskey_And_War.mp3');
         this.load.image('home', 'homeScreen-3D.png');
         this.load.image('gamebackground', 'background.png');
-        
+        this.load.spritesheet('player', 'test-SpriteSheet-removebg-preview.png', { 
+            frameWidth: 153, 
+            frameHeight: 408 
+        });
+        this.load.image('mobile-controls', 'arrow-jump.png');
+        this.load.image('mobile-controls', 'arrow-left.png');
+        this.load.image('mobile-controls', 'arrow-right.png');
     }
 
     create ()
