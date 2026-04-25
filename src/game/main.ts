@@ -12,8 +12,12 @@ const config: Phaser.Types.Core.GameConfig = {
     parent: 'game-container',
     backgroundColor: '#000000',
     scale: {
-        mode: Scale.FIT, // Skalar spelet så det passar skärmen
-        autoCenter: Scale.CENTER_BOTH, // Centrerar spelet
+        // Skalar spelet så det fyller hela skärmen
+        // mode: Scale.ENVELOP, 
+        mode: Scale.FIT, 
+        // Skalar spelet så det passar skärmen
+        autoCenter: Scale.CENTER_BOTH, 
+        // Centrerar spelet
         width: 1024,
         height: 768
     },

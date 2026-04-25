@@ -38,6 +38,7 @@ export class Preloader extends Scene
         this.load.image('star', 'star.png');
         this.load.audio('theme', 'Whiskey_And_War.mp3');
         this.load.image('home', 'homeScreen-3D.png');
+        this.load.image('gamebackground', 'background.png');
         
     }
 

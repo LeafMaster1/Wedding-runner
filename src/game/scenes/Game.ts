@@ -23,7 +23,7 @@ export class Game extends Scene
         this.camera.setBackgroundColor(0x000000);
 
         // Använd din bakgrundsbild
-        this.background = this.add.image(512, 384, 'home');
+        this.background = this.add.image(512, 384, 'gamebackground').setDepth(0);
         this.background.setAlpha(0.3);
 
         // Skapa poängtexten i hörnet

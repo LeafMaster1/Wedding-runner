@@ -20,6 +20,7 @@ export class Boot extends Scene
         this.load.image('boat', 'assets/boat.png');
         
         
+        
     }
 
     create ()
