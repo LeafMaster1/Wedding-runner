@@ -43,9 +43,9 @@ export class Preloader extends Scene
             frameWidth: 153, 
             frameHeight: 408 
         });
-        this.load.image('mobile-controls', 'arrow-jump.png');
-        this.load.image('mobile-controls', 'arrow-left.png');
-        this.load.image('mobile-controls', 'arrow-right.png');
+        this.load.image('mobile-controls-jump', 'arrow-jump.png');
+        this.load.image('mobile-controls-left', 'arrow-left.png');
+        this.load.image('mobile-controls-right', 'arrow-right.png');
     }
 
     create ()

@@ -28,11 +28,17 @@ export class Game extends Scene
         this.background.setDisplaySize(1024, 768);
         this.background.setAlpha(0.5);
 
-        // 1. Mark (Osynlig rektangel)
-        const ground = this.add.rectangle(512, 750, 1024, 20, 0x00ff00, 0);
+        // 1. Mark (Flyttad upp till 600 för att ge plats åt footern)
+        const groundY = 600;
+        const ground = this.add.rectangle(512, groundY, 1024, 20, 0x00ff00, 0);
         this.physics.add.existing(ground, true); 
 
-        // 2. Animationer
+        // 2. Skapa Footer/Kontrollpanel längst ner
+        const footerHeight = 168; // 768 - 600
+        const footer = this.add.rectangle(512, 684, 1024, footerHeight, 0x000000, 0.7);
+        footer.setDepth(90).setScrollFactor(0);
+
+        // 3. Animationer
         this.anims.create({
             key: 'run',
             frames: this.anims.generateFrameNumbers('player', { frames: [0, 1, 3] }),
@@ -46,20 +52,20 @@ export class Game extends Scene
             frameRate: 1
         });
 
-        // 3. Spelaren
-        this.player = this.physics.add.sprite(100, 400, 'player');
+        // 4. Spelaren
+        this.player = this.physics.add.sprite(100, groundY - 100, 'player');
         this.player.setCollideWorldBounds(true);
         this.player.setScale(0.4); 
         
-        // 4. Hitbox-justering
+        // 5. Hitbox-justering
         const body = this.player.body as Phaser.Physics.Arcade.Body;
         body.setSize(100, 350); 
         body.setOffset(25, 30); 
 
-        // 5. Kollision
+        // 6. Kollision
         this.physics.add.collider(this.player, ground);
 
-        // 6. Mobilkontroller
+        // 7. Mobilkontroller
         this.setupControls();
 
         // Poängtext
@@ -78,13 +84,17 @@ export class Game extends Scene
         EventBus.emit('current-scene-ready', this);
     }
 
+    // TODO: if sats som kollar om spelare krockar med fiende, isåfall gameover
+    // TODO: fiender som spawnar och rör sig mot spelaren
+    // TODO: power-ups som spawnar och ger poäng eller tillfälliga förmågor
+    // TODOD: extra poäng om spelaren hoppar över fiender eller samlar power-ups
+    
     update (time: number, delta: number)
     {
         if (!this.gameActive) return;
 
         this.handleInput();
 
-        // Hantera animationer baserat på rörelse
         const body = this.player.body as Phaser.Physics.Arcade.Body;
         if (!body.touching.down) {
             this.player.play('jump', true);
@@ -95,7 +105,6 @@ export class Game extends Scene
             this.player.setFrame(0);
         }
 
-        // Uppdatera poäng
         this.score += delta * 0.1;
         this.scoreText.setText('POÄNG: ' + Math.floor(this.score));
     }
@@ -105,54 +114,49 @@ export class Game extends Scene
         const cursors = this.input.keyboard!.createCursorKeys();
         const body = this.player.body as Phaser.Physics.Arcade.Body;
 
-        // Tangentbord X-axel
         if (cursors.left.isDown) {
             this.player.setVelocityX(-300);
         } else if (cursors.right.isDown) {
             this.player.setVelocityX(300);
         } else {
-            // Vi nollställer bara om vi inte rör oss via mobilknappar (vilket vi kollar i setupControls)
-            // För att hålla det enkelt nollställer vi om inga pilar är nere.
-            // Om man vill ha mjukare stopp kan man använda drag.
             if (this.player.data && !this.player.data.get('isMovingMobile')) {
                 this.player.setVelocityX(0);
             }
         }
 
-        // Hopp (Tangentbord)
         if ((cursors.up.isDown || cursors.space.isDown) && body.touching.down) {
-            this.player.setVelocityY(-800);
+            this.player.setVelocityY(-600);
         }
     }
 
     setupControls()
     {
         this.player.setData('isMovingMobile', false);
+        const buttonY = 684; // Mitten av footern
 
-        // Hopp-knapp
-        const jumpButton = this.add.image(900, 650, 'mobile-controls')
+        // Hopp-knapp (Längst till höger)
+        const jumpButton = this.add.image(900, buttonY, 'mobile-controls-jump')
             .setInteractive({ useHandCursor: true })
             .setDepth(100)
-            .setScale(0.5)
+            .setScale(0.3)
             .setScrollFactor(0);
         
         jumpButton.on('pointerdown', () => {
             if (this.player.body!.touching.down) {
-                this.player.setVelocityY(-800);
+                this.player.setVelocityY(-900);
             }
         });
 
         // Vänster-knapp
-        const leftButton = this.add.image(750, 650, 'mobile-controls')
+        const leftButton = this.add.image(100, buttonY, 'mobile-controls-left')
             .setInteractive({ useHandCursor: true })
             .setDepth(100)
-            .setScale(0.5)
-            .setScrollFactor(0)
-            .setFlipX(true); // Vänd på bilden om det är en pil
+            .setScale(0.3)
+            .setScrollFactor(0);
 
         leftButton.on('pointerdown', () => {
             this.player.setData('isMovingMobile', true);
-            this.player.setVelocityX(-300);
+            this.player.setVelocityX(-350);
         });
 
         leftButton.on('pointerup', () => {
@@ -161,15 +165,15 @@ export class Game extends Scene
         });
 
         // Höger-knapp
-        const rightButton = this.add.image(850, 650, 'mobile-controls')
+        const rightButton = this.add.image(300, buttonY, 'mobile-controls-right')
             .setInteractive({ useHandCursor: true })
             .setDepth(100)
-            .setScale(0.5)
+            .setScale(0.3)
             .setScrollFactor(0);
 
         rightButton.on('pointerdown', () => {
             this.player.setData('isMovingMobile', true);
-            this.player.setVelocityX(300);
+            this.player.setVelocityX(350);
         });
 
         rightButton.on('pointerup', () => {
