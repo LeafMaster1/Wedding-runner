@@ -4,6 +4,7 @@
     export let score: number;
     export let onRestart: () => void;
     export let onToMenu: () => void;
+    export let showPictures: () => void;
 
     let playerName = "";
     let submitted = false;
@@ -43,6 +44,7 @@
 
         <div class="footer-buttons">
             <button class="restart-btn" on:click={onRestart}>SPELA IGEN</button>
+            <button class="pictures-btn" on:click={showPictures}>BILDER</button>
         </div>
     </div>
 </div>

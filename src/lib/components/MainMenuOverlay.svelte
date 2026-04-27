@@ -2,6 +2,7 @@
     export let onPlay: () => void;
     export let onShowHighscore: () => void;
     export let onShowSettings: () => void;
+    export let onShowPictures: () => void;
 </script>
 
 <div class="menu-container">
@@ -18,6 +19,9 @@
         </button>
         <button class="highscore-btn" on:click={onShowHighscore}>
             HIGHSCORE
+        </button>
+        <button class="picture-btn" on:click={onShowPictures}>
+            BILDER
         </button>
     </footer>
 </div>
