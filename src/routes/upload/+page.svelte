@@ -1,6 +1,7 @@
 <script lang="ts">
     import { supabase } from '$lib/supabaseClient';
     import imageCompression from 'browser-image-compression';
+    
 
     let files: FileList | null = null;
     let uploading = false;
@@ -56,6 +57,22 @@
             uploadProgress = "";
         }
     }
+    const iconCamera = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0
+     0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+     stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0
+     2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>`;
+     
+     const iconGallery = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0
+     0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+     stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9"
+     cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>`;
+
+     const iconSend = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0
+     24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+     stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13
+     2 9 22 2"/></svg>`;
+
+
 </script>
 
 <svelte:head>
@@ -75,14 +92,37 @@
                         <img src={previewUrl} alt="Preview" />
                     </div>
                 {/if}
+                <!-- dolt fält för kamera -->
+                 <input type="file"
+                  accept="image/*"
+                  capture="environment"
+                  id="camera-input"
+                  on:change={handleFileChange}
+                  style="display: none;">
 
-                <label class="file-label">
+                  <!-- dolt för galleriet -->
+                   <input type="file" 
+                   accept="image/*" 
+                   id="gallery-input" 
+                   style="display: none;" 
+                   on:change={handleFileChange}>
+
+                <!-- <label class="file-label">
                     <input type="file" accept="image/*" on:change={handleFileChange} capture="environment" />
                     <span>{previewUrl ? 'VÄLJ EN ANNAN BILD' : 'TA ETT KORT / VÄLJ BILD'}</span>
-                </label>
+                </label> -->
+                <div class ="button-grid">
+                    <button class="action-btn camera-btn" on:click={() => document.getElementById('camera-input')?.click()}>
+                        <span class="icon">{@html iconCamera} </span> Ta Ett Kort
+                    </button>
+                    <button class="action-btn gallery-btn" on:click={() => document.getElementById('gallery-input')?.click()}>
+                        <span class="icon">{@html iconGallery}</span> Välj Från galleriet
+                    </button>
+                </div>
 
                 {#if files}
                     <button class="upload-btn" on:click={uploadImage} disabled={uploading}>
+                    <span class="icon">{@html iconSend} </span>
                         {uploading ? 'LADDAR UPP...' : 'SKICKA BILD'}
                     </button>
                 {/if}
@@ -115,27 +155,50 @@
         min-height: 100vh;
         padding: 20px;
         box-sizing: border-box;
-        background: linear-gradient(135deg, #ff7eb3 0%, #ff758c 100%);
+        
+        /* BAKGRUNDSBILDEN */
+        background-image: url('/assets/background.png'); /* Eller background.png */
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed; /* Gör att bakgrunden inte scrollar på mobilen */
+        position: relative;
+        /* background: linear-gradient(135deg, #ff7eb3 0%, #ff758c 100%); */
+    }
+    .upload-page::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.3); /* Mörk överlägg för bättre kontrast */
+        z-index: 1;
     }
 
     .card {
-        background: white;
+        position: relative;
+        z-index: 10; /* Se till att kortet är ovanför bakgrunden */
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
         padding: 2rem;
-        border-radius: 20px;
+        border-radius: 25px;
         width: 100%;
         max-width: 400px;
         text-align: center;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        background-image: url('/assets/paret-wedding.png');
+        background-size: auto 100%;
+        background-position: center;
+        /* background-repeat: no-repeat; */
 
+        /* background: rgba(255, 255, 255, 0.1) url('/assets/paret-wedding.png');  */
+    }
     h1 {
         color: #e712d1;
-        font-size: 1.8rem;
+        font-size: 2rem;
         margin-bottom: 0.5rem;
     }
 
     .subtitle {
-        color: #666;
+        color: #e712d1;
         margin-bottom: 2rem;
     }
 
@@ -145,6 +208,7 @@
         gap: 1.5rem;
     }
 
+    
     .preview {
         width: 100%;
         height: 200px;
@@ -174,17 +238,6 @@
         display: none;
     }
 
-    .upload-btn {
-        background: #e712d1;
-        color: white;
-        border: none;
-        padding: 1rem;
-        border-radius: 50px;
-        font-weight: bold;
-        font-size: 1.1rem;
-        cursor: pointer;
-        box-shadow: 0 4px 10px rgba(231, 18, 209, 0.3);
-    }
 
     .upload-btn:disabled {
         background: #ccc;
@@ -196,11 +249,16 @@
     }
 
     .icon {
-        font-size: 4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
         margin-bottom: 1rem;
+        /* width: 24px;
+        height: 24px; */
     }
 
-    .reset-btn {
+    /* .reset-btn {
         margin-top: 1.5rem;
         background: none;
         border: 2px solid #e712d1;
@@ -210,4 +268,75 @@
         font-weight: bold;
         cursor: pointer;
     }
+    .button-grid {
+        display: flex;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    .action-btn {
+      padding: 1.2rem;
+      border-radius: 15px;
+      border: 2px solid #e712d1;
+      background: white;
+      color: #e712d1;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .action-btn:active {
+        transform: scale(0.95);
+        background: var(--e712d1);
+        color: white;
+    } */
+      /* Knapp-behållaren */
+    .button-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+        width: 100%;
+        margin-top: 1rem;
+    }
+    /* Den gemensamma stilen för ALLA knappar på sidan */
+   .action-btn, .upload-btn, .reset-btn {
+       padding: 1.2rem 1.5rem;
+       font-size: clamp(1.1rem, 5vw, 1.5rem); /* Något mindre text för att få plats */
+       font-weight: bold;
+       border: 2px solid white; /* Eller var(--color-white) om den är tillgänglig */
+       border-radius: 50px;
+       cursor: pointer;
+       transition: transform 0.2s, background 0.2s;
+       width: 100%;
+       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.);
+       background: rgba(231, 18, 209, 0.3); /* Din rosa färg (var--color-primary) */
+       color: white;
+       text-transform: uppercase;
+       letter-spacing: 1px;
+   }   
+   /* Hover-effekt (samma som menyn) */
+   .action-btn:hover, .upload-btn:hover:not(:disabled), .reset-btn:hover {
+       background: rgba(255, 255, 255, 0.3);
+       color: #e712d1;
+       border: 2px solid #e712d1;
+   }   
+   /* Tryck-effekt */
+   .action-btn:active, .upload-btn:active:not(:disabled), .reset-btn:active {
+       transform: scale(0.95);
+   }   
+   /* Grå färg om knappen är avstängd */
+   .upload-btn:disabled {
+       background: #ccc;
+       border-color: #999;
+       cursor: not-allowed;
+       box-shadow: none;
+   }
+    
+   .action-btn :global(svg) {
+    stroke: white;
+    transition: stroke 0.2s;
+   }
+   .action-btn:hover :global(svg) {
+    stroke: #e712d1;
+   }
+
 </style>
