@@ -1,6 +1,11 @@
 <script lang="ts">
-    import { highscores } from '$lib/highscoreStore';
+    import { onMount } from 'svelte';
+    import { highscores, fetchHighScores } from '$lib/highscoreStore';
     export let onClose: () => void;
+
+    onMount(() => {
+        fetchHighScores();
+    });
 </script>
 
 <div class="highscore-overlay">

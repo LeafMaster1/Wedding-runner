@@ -5,11 +5,13 @@
     import HighscoreList from "$lib/components/HighscoreList.svelte";
     import GameOverOverlay from "$lib/components/GameOverOverlay.svelte";
     import SettingsOverlay from "$lib/components/SettingsOverlay.svelte";
+    import Galleri from "$lib/components/Galleri.svelte";
 
     let phaserRef: any = { game: null, scene: null };
     let currentSceneName = "Boot";
     let showHighscore = false;
     let showSettings = false;
+    let showGallery = false;
     let currentScore = 0;
 
     const currentScene = (scene: Scene) => {
@@ -32,11 +34,14 @@
             <HighscoreList onClose={() => showHighscore = false} />
         {:else if showSettings}
             <SettingsOverlay onClose={() => showSettings = false} />
+        {:else if showGallery}
+            <Galleri onClose={() => showGallery = false} />
         {:else}
             <MainMenuOverlay 
                 onPlay={startPlaying} 
                 onShowHighscore={() => showHighscore = true} 
                 onShowSettings={() => showSettings = true}
+                onShowPictures={() => showGallery = true}
             />
         {/if}
     {/if}
