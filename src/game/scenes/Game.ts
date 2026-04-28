@@ -56,11 +56,11 @@ export class Game extends Scene
         // 4. Spelaren
         this.player = this.physics.add.sprite(100, groundY - 100, 'player');
         this.player.setCollideWorldBounds(true);
-        this.player.setScale(0.4); 
+        this.player.setScale(1); 
         
         // 5. Hitbox-justering
         const body = this.player.body as Phaser.Physics.Arcade.Body;
-        body.setSize(100, 350); 
+        body.setSize(100, 250); 
         body.setOffset(25, 30); 
 
         // 6. Kollision
