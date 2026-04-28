@@ -127,19 +127,20 @@
     .gallery-card {
         background-color: white;
         color: black;
-        padding: 1.5rem;
-        border-radius: 25px;
+        padding: 2rem;
+        border-radius: 30px;
         width: 100%;
-        max-width: 500px;
+        max-width: 1020px; /* Ännu bredare kort */
+        /* max-width: 800px; */
         text-align: center;
-        box-shadow: 0 0 30px var(--color-primary);
+        box-shadow: 0 0 50px var(--color-primary);
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 1.5rem;
     }
 
     h2 {
-        font-size: 2rem;
+        font-size: 2.5rem;
         margin: 0;
         color: var(--color-primary);
         font-family: "Arial Black", sans-serif;
@@ -148,13 +149,14 @@
     .slideshow-container {
         position: relative;
         width: 100%;
-        height: 250px;
-        background: #eee;
-        border-radius: 15px;
+        height: 450px; /* Högre bildvisning */
+        background: #000; /* Svart bakgrund för bilderna */
+        border-radius: 20px;
         overflow: hidden;
         display: flex;
         justify-content: center;
         align-items: center;
+        border: 4px solid var(--color-primary);
     }
 
     .image-wrapper {
@@ -166,32 +168,39 @@
     img {
         width: 100%;
         height: 100%;
-        object-fit: contain;
+        object-fit: contain; /* Behåll hela bilden synlig */
     }
 
     .nav-btn {
         position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(0, 0, 0, 0.5);
+        top: 0;
+        bottom: 0;
+        width: 60px; /* Bredare klickyta */
+        background: rgba(0, 0, 0, 0.2); /* Väldigt diskret bakgrund */
         color: white;
         border: none;
-        padding: 10px;
         cursor: pointer;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 1.2rem;
+        font-size: 2rem;
+        transition: background 0.3s, opacity 0.3s;
+        opacity: 0.6;
+        z-index: 10;
+    }
+
+    .nav-btn:hover {
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 1;
     }
 
     .prev {
-        left: 10px;
+        left: 0;
+        border-radius: 0 15px 15px 0;
     }
     .next {
-        right: 10px;
+        right: 0;
+        border-radius: 15px 0 0 15px;
     }
 
     .upload-section {
