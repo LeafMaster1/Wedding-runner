@@ -9,6 +9,7 @@ export class Game extends Scene
     player: Phaser.Physics.Arcade.Sprite;
     scoreText: Phaser.GameObjects.Text;
     gameActive: boolean = true;
+    enemy: Phaser.Physics.Arcade.Sprite;
 
     constructor ()
     {
@@ -67,6 +68,11 @@ export class Game extends Scene
 
         // 7. Mobilkontroller
         this.setupControls();
+
+        this.enemy = this.physics.add.sprite(800, groundY - 100, 'enemy');
+        this.enemy.setCollideWorldBounds(true);
+        this.physics.add.collider(this.enemy, ground);
+        this.physics.add.overlap(this.player, this.enemy, () => this.gameOver(), undefined, this);
 
         // Poängtext
         this.scoreText = this.add.text(20, 20, 'POÄNG: 0', {
