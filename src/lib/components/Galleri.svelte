@@ -95,11 +95,12 @@
         </div>
 
         <div class="upload-section">
-            <p>Vill du synas här? Skanna koden!</p>
+            <p>Vill du synas här?</p>
             <div class="qr-container">
                 <img src={qrCodeUrl} alt="QR Code för uppladdning" />
             </div>
-            <p class="upload-link">Dela bilden på: {uploadUrl}</p>
+            <a href="/upload" class="upload-btn-action">LADDA UPP DIN BILD HÄR</a>
+            <p class="upload-link">Eller dela på: {uploadUrl}</p>
         </div>
 
         <button class="back-btn" on:click={onClose}>TILLBAKA</button>
@@ -198,12 +199,16 @@
         padding: 1rem;
         border-radius: 15px;
         border: 2px dashed #ccc;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .qr-container {
-        margin: 10px auto;
-        width: 120px;
-        height: 120px;
+        margin: 5px auto;
+        width: 100px;
+        height: 100px;
         background: white;
         padding: 5px;
         border-radius: 10px;
@@ -214,9 +219,26 @@
         height: 100%;
     }
 
+    .upload-btn-action {
+        background-color: var(--color-primary);
+        color: white;
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+
+    .upload-btn-action:active {
+        transform: scale(0.95);
+    }
+
     .upload-link {
-        font-size: 0.7rem;
+        font-size: 0.6rem;
         color: #666;
+        margin: 0;
     }
 
     .back-btn {
