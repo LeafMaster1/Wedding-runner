@@ -149,7 +149,7 @@ export class Game extends Scene
         
         jumpButton.on('pointerdown', () => {
             if (this.player.body!.touching.down) {
-                this.player.setVelocityY(-900);
+                this.player.setVelocityY(-600);
             }
         });
 
@@ -162,7 +162,7 @@ export class Game extends Scene
 
         leftButton.on('pointerdown', () => {
             this.player.setData('isMovingMobile', true);
-            this.player.setVelocityX(-350);
+            this.player.setVelocityX(-300);
         });
 
         leftButton.on('pointerup', () => {
@@ -179,7 +179,7 @@ export class Game extends Scene
 
         rightButton.on('pointerdown', () => {
             this.player.setData('isMovingMobile', true);
-            this.player.setVelocityX(350);
+            this.player.setVelocityX(300);
         });
 
         rightButton.on('pointerup', () => {
