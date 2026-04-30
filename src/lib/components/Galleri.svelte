@@ -55,7 +55,7 @@
         }, 5000);
         fetchInterval = setInterval(() => {
             loadImages();
-        }, 60000); // Uppdatera bilder varje minut
+        }, 30000); // Uppdatera bilder varje 30 sekunder
     });
 
     onDestroy(() => {
