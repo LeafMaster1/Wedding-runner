@@ -24,7 +24,7 @@ const config: Phaser.Types.Core.GameConfig = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 1200, x: 0 },
+            gravity: { y: 1180, x: 0 },
             debug: true // ska ändra till false innan release OBS!!!!!!!!
             
         }
