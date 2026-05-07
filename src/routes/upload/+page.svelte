@@ -17,6 +17,11 @@
             success = false;
         }
     }
+    function homePage() {
+        
+        window.location.href = '/';
+        
+    }
 
     async function uploadImage() {
         if (!files || files.length === 0) return;
@@ -72,6 +77,10 @@
      stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13
      2 9 22 2"/></svg>`;
 
+        const iconBack = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0
+     24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+     stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>`;
+
 
 </script>
 
@@ -118,6 +127,11 @@
                     <button class="action-btn gallery-btn" on:click={() => document.getElementById('gallery-input')?.click()}>
                         <span class="icon">{@html iconGallery}</span> Välj Från galleriet
                     </button>
+                    <button class="action-btn back-btn" on:click={homePage}>
+                        <span class="icon">{@html iconBack}</span>
+                        backa till menyn
+                    </button>
+                    
                 </div>
 
                 {#if files}
@@ -125,6 +139,7 @@
                     <span class="icon">{@html iconSend} </span>
                         {uploading ? 'LADDAR UPP...' : 'SKICKA BILD'}
                     </button>
+                    
                 {/if}
             </div>
         {:else}
@@ -298,7 +313,7 @@
         margin-top: 1rem;
     }
     /* Den gemensamma stilen för ALLA knappar på sidan */
-   .action-btn, .upload-btn, .reset-btn {
+   .action-btn, .upload-btn, .reset-btn, .back-btn {
        padding: 1.2rem 1.5rem;
        font-size: clamp(1.1rem, 5vw, 1.5rem); /* Något mindre text för att få plats */
        font-weight: bold;
@@ -338,5 +353,6 @@
    .action-btn:hover :global(svg) {
     stroke: #e712d1;
    }
+
 
 </style>
