@@ -63,27 +63,34 @@ export class Game extends Scene
             this.enemy.setCollideWorldBounds(false);
             this.enemy.setBodySize(200, 300, true); // Gör hitboxen större än sprite för bättre kollisionsdetektion
             
-
-
-        this.anims.create({
-            key: 'jump',
-            frames: [{ key: 'player', frame: 2 }],
-            frameRate: 1
-        });
-
-        // 4. Spelaren
-        this.player = this.physics.add.sprite(100, groundY - 100, 'player');
-        this.player.setCollideWorldBounds(true);
-        this.player.setScale(1); 
-        
-        // 5. Hitbox-justering
-        const body = this.player.body as Phaser.Physics.Arcade.Body;
-        body.setSize(100, 250); 
-        body.setOffset(25, 30); 
-
-        // 6. Kollision
-        this.physics.add.collider(this.player, ground);
-        this.physics.add.collider(this.enemy, ground);
+            
+            this.anims.create({
+                key: 'jump',
+                frames: [{ key: 'player', frame: 2 }],
+                frameRate: 1
+            });
+            
+            // 4. Spelaren
+            this.player = this.physics.add.sprite(100, groundY - 100, 'player');
+            this.player.setCollideWorldBounds(true);
+            this.player.setScale(1); 
+            
+            // 5. Hitbox-justering
+            const body = this.player.body as Phaser.Physics.Arcade.Body;
+            body.setSize(100, 250); 
+            body.setOffset(25, 30); 
+            
+            // 6. Kollision
+            this.physics.add.collider(this.player, ground);
+            this.physics.add.collider(this.enemy, ground);
+            
+            this.physics.add.overlap(
+                this.player,
+                this.enemy,
+                () => this.gameOver(),
+                undefined,
+                this
+            );
 
         // 7. Mobilkontroller
         this.setupControls();
@@ -213,7 +220,11 @@ export class Game extends Scene
 
     gameOver ()
     {
+        if (this.gameActive === false) return;
+
         this.gameActive = false;
+
+        console.log('krock !!');
         this.physics.pause();
         this.player.anims.stop();
         this.scene.start('GameOver', { score: Math.floor(this.score) });
