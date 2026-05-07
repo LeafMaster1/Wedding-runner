@@ -4,9 +4,14 @@
     --color-secondary: #ffffff; /* Ren vit */
     --color-dark: #000000;    /* Svart */
     --color-white: #ffffff;
-}
 
-:global(html, body) {
+    box-sizing: border-box;
+}
+*, ::before, ::after {
+        box-sizing: inherit;
+    }
+
+html, body {
     background-color: var(--color-dark);
     margin: 0;
     padding: 0;
@@ -20,7 +25,8 @@
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation; /* Förbättrar touch-upplevelsen */
 }
-:global(body) {
+body {
     position: fixed;
     overscroll-behavior-y: none; /* Förhindrar scrollning på mobilen */
 }
+
