@@ -44,8 +44,8 @@ export class Preloader extends Scene
             frameHeight: 408 
         });
         this.load.spritesheet('enemy', 'enemy-SpriteSheet-No-background.png', {
-            frameWidth: 256, // 100
-            frameHeight: 256 // 100 
+            frameWidth: 384, // 256
+            frameHeight: 512 // 256 
         });
         this.load.image('mobile-controls-jump', 'arrow-jump.png');
         this.load.image('mobile-controls-left', 'arrow-left.png');

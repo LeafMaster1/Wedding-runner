@@ -11,6 +11,7 @@ export class Game extends Scene
     gameActive: boolean = true;
     enemy: Phaser.Physics.Arcade.Sprite;
 
+
     constructor ()
     {
         super('Game');
@@ -49,19 +50,19 @@ export class Game extends Scene
         // enemy animation
         this.anims.create({
             key: 'enemy-walk',
-            frames: this.anims.generateFrameNames('enemy', { start: 0, end: 5 }),
-            frameRate: 10,
+            frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 3 }),
+            frameRate: 8,
             repeat: -1
         });
         // Skapa fienden och starta dess animation
-            this.enemy = this.physics.add.sprite(1100, groundY - 150, 'enemy');
+            this.enemy = this.physics.add.sprite(1100, groundY - 300, 'enemy'); // 1100 -300
+            // this.enemy.setFlipX(true);  Vänd fienden så den ser mot vänster
             this.enemy.setVelocityX(-200); // Fienden rör sig mot vänster
-            this.enemy.setScale(0.5);
+            this.enemy.setScale(0.4);
             this.enemy.anims.play('enemy-walk');
             this.enemy.setCollideWorldBounds(false);
-            this.enemy.body?.setSize(100, 159); // Justera hitboxen för fienden
-            this.enemy.body?.setOffset(78, 100); // Justera hitboxens position
-
+            this.enemy.setBodySize(200, 300, true); // Gör hitboxen större än sprite för bättre kollisionsdetektion
+            
 
 
         this.anims.create({
@@ -213,6 +214,8 @@ export class Game extends Scene
     gameOver ()
     {
         this.gameActive = false;
+        this.physics.pause();
+        this.player.anims.stop();
         this.scene.start('GameOver', { score: Math.floor(this.score) });
     }
 }
