@@ -43,6 +43,10 @@ export class Preloader extends Scene
             frameWidth: 153, 
             frameHeight: 408 
         });
+        this.load.spritesheet('enemy', 'enemy-SpriteSheet-No-background.png', {
+            frameWidth: 256, // 100
+            frameHeight: 256 // 100 
+        });
         this.load.image('mobile-controls-jump', 'arrow-jump.png');
         this.load.image('mobile-controls-left', 'arrow-left.png');
         this.load.image('mobile-controls-right', 'arrow-right.png');

@@ -46,6 +46,23 @@ export class Game extends Scene
             frameRate: 10,
             repeat: -1
         });
+        // enemy animation
+        this.anims.create({
+            key: 'enemy-walk',
+            frames: this.anims.generateFrameNames('enemy', { start: 0, end: 5 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        // Skapa fienden och starta dess animation
+            this.enemy = this.physics.add.sprite(1100, groundY - 150, 'enemy');
+            this.enemy.setVelocityX(-200); // Fienden rör sig mot vänster
+            this.enemy.setScale(0.5);
+            this.enemy.anims.play('enemy-walk');
+            this.enemy.setCollideWorldBounds(false);
+            this.enemy.body?.setSize(100, 159); // Justera hitboxen för fienden
+            this.enemy.body?.setOffset(78, 100); // Justera hitboxens position
+
+
 
         this.anims.create({
             key: 'jump',
@@ -65,14 +82,15 @@ export class Game extends Scene
 
         // 6. Kollision
         this.physics.add.collider(this.player, ground);
+        this.physics.add.collider(this.enemy, ground);
 
         // 7. Mobilkontroller
         this.setupControls();
 
-        this.enemy = this.physics.add.sprite(800, groundY - 100, 'enemy');
-        this.enemy.setCollideWorldBounds(true);
-        this.physics.add.collider(this.enemy, ground);
-        this.physics.add.overlap(this.player, this.enemy, () => this.gameOver(), undefined, this);
+        // this.enemy = this.physics.add.sprite(800, groundY - 100, 'enemy');
+        // this.enemy.setCollideWorldBounds(true);
+        // this.physics.add.collider(this.enemy, ground);
+        // this.physics.add.overlap(this.player, this.enemy, () => this.gameOver(), undefined, this);
 
         // Poängtext
         this.scoreText = this.add.text(20, 20, 'POÄNG: 0', {
@@ -109,6 +127,10 @@ export class Game extends Scene
         } else {
             this.player.anims.stop();
             this.player.setFrame(0);
+        }
+        if (this.enemy.x < -100) {
+            this.enemy.x = 1100; // Starta om fienden från höger
+            this.enemy.setVelocityX(-200 + Math.random() * 200); // Variera hastigheten lite
         }
 
         this.score += delta * 0.1;
