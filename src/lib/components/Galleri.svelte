@@ -80,11 +80,13 @@
     <div class="gallery-card">
         <h2>BILDGALLERI</h2>
 
-        <div class="slideshow-container">
+        <!-- <div class="slideshow-container"> -->
+        <div class="slideshow-cont">
             {#if loading}
                 <p>Laddar bilder...</p>
             {:else if images.length > 0}
-                <div class="image-wrapper">
+                <!-- <div class="image-wrapper"> class="image-wrapper -->
+                    <div class="image-container">
                     <img src={images[currentIndex]} alt="Wedding Galleri" />
                     <button class="nav-btn prev" on:click={prevImage}>❮</button>
                     <button class="nav-btn next" on:click={nextImage}>❯</button>
@@ -94,20 +96,53 @@
             {/if}
         </div>
 
-        <div class="upload-section">
+        <div class="upload-button-section">
+            <a href="/upload" class="upload-btn-action">LADDA UPP DIN BILD HÄR</a>
+        </div>
+
+        <!-- <div class="upload-section">
             <p>Vill du synas här?</p>
             <div class="qr-container">
                 <img src={qrCodeUrl} alt="QR Code för uppladdning" />
             </div>
             <a href="/upload" class="upload-btn-action">LADDA UPP DIN BILD HÄR</a>
             <p class="upload-link">Eller dela på: {uploadUrl}</p>
-        </div>
+        </div> -->
 
         <button class="back-btn" on:click={onClose}>TILLBAKA</button>
+
     </div>
 </div>
 
 <style>
+
+.slideshow-cont {
+    position: relative;
+    width: 100%;
+    min-height: 300px; /* Minsta höjd för att undvika för liten bildvisning */
+    height: 100%; /* Full höjd på kortet */
+    /* height: 450px; Högre bildvisning */
+    background: #000; /* Svart bakgrund för bilderna */
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 4px solid var(--color-primary);
+}
+.image-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.upload-button-section {
+    margin: 1rem 0;
+    display: flex;
+    justify-content: center;
+}
     /* Samma stilar som tidigare */
     .gallery-overlay {
         position: absolute;
@@ -125,18 +160,20 @@
     }
 
     .gallery-card {
-        background-color: white;
+        background-color: #ccc;
+        /* background-color: var(--color-white); */
         color: black;
         padding: 2rem;
         border-radius: 30px;
         width: 100%;
+        height: 90vh; /* Tar nästan hela höjden */
         max-width: 1020px; /* Ännu bredare kort */
         /* max-width: 800px; */
         text-align: center;
         box-shadow: 0 0 50px var(--color-primary);
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
+        /* gap: 1.5rem; */
     }
 
     h2 {
@@ -231,13 +268,20 @@
     .upload-btn-action {
         background-color: var(--color-primary);
         color: white;
-        padding: 0.8rem 1.2rem;
+        padding: 1.2rem 2.5rem;
         border-radius: 50px;
         text-decoration: none;
         font-weight: bold;
-        font-size: 0.9rem;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        transition: transform 0.2s;
+        font-size: 1.2rem;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        transition: transform 0.2s, background-color 0.2s;
+    }
+    .upload-btn-action:hover {
+        background-color: var(--color-white);
+        color: var(--color-primary);
+        border-color: var(--color-primary);
+        box-shadow: inset 0 0 0 2px var(--color-primary);
+        transform: translateY(-2px);
     }
 
     .upload-btn-action:active {
@@ -258,5 +302,12 @@
         border-radius: 50px;
         cursor: pointer;
         font-weight: bold;
+        font-size: 1.2rem;
+    }
+    .back-btn:hover {
+        background: var(--color-white);
+        color: var(--color-primary);
+        border-color: var(--color-primary);
+        box-shadow: inset 0 0 0 2px var(--color-primary);
     }
 </style>
