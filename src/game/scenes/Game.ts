@@ -83,8 +83,10 @@ export class Game extends Scene {
         // this.physics.add.collider(this.enemies, ground);
 
         // spawna fler enemies
+        // spwana en enemy först 
+        this.spawnEnemy();
         this.time.addEvent({
-            delay: 3000,
+            delay: 2500,
             callback: this.spawnEnemy,
             callbackScope: this,
             loop: true,
