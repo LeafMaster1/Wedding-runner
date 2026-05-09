@@ -79,7 +79,7 @@
         backdrop-filter: blur(5px);
     }
 
-    button:hover {
+    :global(button):hover {
         background: var(--color-white);
         color: var(--color-primary);
         border: 2px solid var(--color-primary);

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { highscores, fetchHighScores } from '$lib/highscoreStore';
+    import { highscores, fetchHighScores } from '../highscoreStore';
     export let onClose: () => void;
 
     onMount(() => {

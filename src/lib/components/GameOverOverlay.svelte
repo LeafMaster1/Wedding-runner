@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { addHighScore } from '$lib/highscoreStore';
+    import { addHighScore } from '../highscoreStore';
     
     export let score: number;
     export let onRestart: () => void;
@@ -31,20 +31,19 @@
                     placeholder="DITT NAMN" 
                     maxlength="15"
                 />
-                <button class="save-btn" on:click={handleSubmit} disabled={playerName.trim().length === 0}>
+                <button class="btn" on:click={handleSubmit} disabled={playerName.trim().length === 0}>
                     SPARA POÄNG
                 </button>
             </div>
         {:else}
             <div class="submitted-msg">
                 <p>Poängen är sparad!</p>
-                <button class="menu-btn" on:click={onToMenu}>TILL MENYN</button>
+                <button class="btn" on:click={onToMenu}>TILL MENYN</button>
             </div>
         {/if}
 
         <div class="footer-buttons">
-            <button class="restart-btn" on:click={onRestart}>SPELA IGEN</button>
-            <button class="pictures-btn" on:click={showPictures}>BILDER</button>
+            <button class="btn" on:click={onRestart}>SPELA IGEN</button>
         </div>
     </div>
 </div>
@@ -125,9 +124,10 @@
         border-radius: 50px;
         cursor: pointer;
         transition: transform 0.2s;
+        margin-bottom: 2rem;
     }
 
-    .save-btn {
+    /* .save-btn {
         background: var(--color-primary);
         color: #fff;
     }
@@ -154,7 +154,7 @@
         color: var(--color-primary);
         border: 2px solid var(--color-primary);
         margin-top: 2rem;
-    }
+    } */
 
     button:active {
         transform: scale(0.95);
