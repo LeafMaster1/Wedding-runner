@@ -10,6 +10,8 @@ export class Game extends Scene {
     gameActive: boolean = true;
     // enemy!: Phaser.Physics.Arcade.Sprite;
     enemies!: Phaser.Physics.Arcade.Group;
+    currentSpeed: number = 250;
+    
 
     constructor() {
         super("Game");
@@ -189,7 +191,7 @@ export class Game extends Scene {
         // }
 
 
-       
+        this.currentSpeed += delta * 0.005;
 
         this.score += delta * 0.1;
         this.scoreText.setText("POÄNG: " + Math.floor(this.score));
@@ -278,13 +280,13 @@ export class Game extends Scene {
         const enemy = this.enemies.create(1100, groundY - 100, "enemy");
 
         // Använd din befintliga logik:
-        enemy.setVelocityX(-200); // Lite snabbare för mer utmaning?
+        enemy.setVelocityX(-this.currentSpeed); // samma speed som spelare
         enemy.setScale(0.4);
         enemy.anims.play("enemy-walk");
         enemy.setBodySize(200, 300, true);
 
         // Valfritt: Slumpmässig hastighet för att göra det svårare
-        enemy.setVelocityX(-(200 + Math.random() * 200));
+        // enemy.setVelocityX(-(200 + Math.random() * 200));
     }
     gameOver() {
         if (this.gameActive === false) return;
