@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { supabase } from "$lib/supabaseClient";
+    import { supabase } from "../../lib/supabaseClient";
     import imageCompression from "browser-image-compression";
 
     let files: FileList | null = null;
@@ -307,7 +307,7 @@
         object-fit: cover;
     }
 
-    .file-label {
+    /* .file-label {
         background: #eee;
         padding: 1rem;
         border-radius: 10px;
@@ -316,11 +316,11 @@
         display: block;
         font-weight: bold;
         color: #555;
-    }
+    } */
 
-    .file-label input {
+    /* .file-label input {
         display: none;
-    }
+    } */
 
     .upload-btn:disabled {
         background: #ccc;
