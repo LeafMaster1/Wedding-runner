@@ -209,7 +209,7 @@ export class Game extends Scene {
 
         this.currentSpeed += delta * 0.005;
 
-        this.score += delta * 0.1;
+        this.score += delta * 0.02;
         this.scoreText.setText("POÄNG: " + Math.floor(this.score));
     }
 
