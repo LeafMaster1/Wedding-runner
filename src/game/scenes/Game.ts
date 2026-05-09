@@ -8,7 +8,7 @@ export class Game extends Scene {
     player!: Phaser.Physics.Arcade.Sprite;
     scoreText!: Phaser.GameObjects.Text;
     gameActive: boolean = true;
-    enemy!: Phaser.Physics.Arcade.Sprite;
+    // enemy!: Phaser.Physics.Arcade.Sprite;
     enemies!: Phaser.Physics.Arcade.Group;
 
     constructor() {
@@ -56,8 +56,7 @@ export class Game extends Scene {
             repeat: -1,
         });
         // enemy animation
-        if (!this.anims.exists('enemy-walk')){
-
+        if (!this.anims.exists("enemy-walk")) {
             this.anims.create({
                 key: "enemy-walk",
                 frames: this.anims.generateFrameNumbers("enemy", {
@@ -70,17 +69,18 @@ export class Game extends Scene {
         }
 
         this.enemies = this.physics.add.group();
-        
 
         // Skapa fienden och starta dess animation
-        this.enemy = this.physics.add.sprite(1100, groundY - 300, "enemy"); // 1100 -300
         // this.enemy.setFlipX(true);  Vänd fienden så den ser mot vänster
-        this.enemy.setVelocityX(-200); // Fienden rör sig mot vänster
-        this.enemy.setScale(0.4);
-        this.enemy.anims.play("enemy-walk");
-        this.enemy.setCollideWorldBounds(false);
-        this.enemy.setBodySize(200, 300, true); // Gör hitboxen större än sprite för bättre kollisionsdetektion
-        this.physics.add.collider(this.enemies, ground);
+        
+        
+        // this.enemy = this.physics.add.sprite(1100, groundY - 300, "enemy"); // 1100 -300
+        // this.enemy.setVelocityX(-200); // Fienden rör sig mot vänster
+        // this.enemy.setScale(0.4);
+        // this.enemy.anims.play("enemy-walk");
+        // this.enemy.setCollideWorldBounds(false);
+        // this.enemy.setBodySize(200, 300, true); // Gör hitboxen större än sprite för bättre kollisionsdetektion
+        // this.physics.add.collider(this.enemies, ground);
 
         // spawna fler enemies
         this.time.addEvent({
@@ -116,7 +116,7 @@ export class Game extends Scene {
             this.enemies,
             () => this.gameOver(),
             undefined,
-            
+            this
         );
 
         // 7. Mobilkontroller
@@ -161,7 +161,7 @@ export class Game extends Scene {
     // TODOD: extra poäng om spelaren hoppar över fiender eller samlar power-ups
 
     update(time: number, delta: number) {
-        if (!this.gameActive) return;
+        if (!this.gameActive || !this.enemies) return;
 
         this.handleInput();
 
@@ -174,16 +174,20 @@ export class Game extends Scene {
             this.player.anims.stop();
             this.player.setFrame(0);
         }
-        if (this.enemy.x < -100) {
-            this.enemy.x = 1100; // Starta om fienden från höger
-            this.enemy.setVelocityX(-200 + Math.random() * 200); // Variera hastigheten lite
-        }
-        // this.enemies.getChildren().forEach((enemy: any) => {
-        //     if (enemy.x < -100) {
-        //         enemy.destroy();
-        //         console.log("Fiende borttagen för att spara minne");
-        //     }
-        // });
+
+        this.enemies.getChildren().forEach((enemy: any) => {
+            if (enemy.x < -100) {
+                enemy.destroy(); // Tar bort fienden permanent när den är utanför bild
+            }
+        });
+
+        // if (this.enemy.x < -100) {
+        //     this.enemy.x = 1100; // Starta om fienden från höger
+        //     this.enemy.setVelocityX(-200 + Math.random() * 200); // Variera hastigheten lite
+        // }
+
+
+       
 
         this.score += delta * 0.1;
         this.scoreText.setText("POÄNG: " + Math.floor(this.score));
@@ -265,11 +269,11 @@ export class Game extends Scene {
     spawnEnemy() {
         if (!this.enemies || !this.gameActive) return;
         // logging om fiende spawnar
-        console.log("Försöker spawna fiende..."); 
+        console.log("Försöker spawna fiende...");
 
         // Skapa en ny fiende i gruppen
-         const groundY = 600;
-         const enemy = this.enemies.create(900, groundY - 300, 'enemy');
+        const groundY = 600;
+        const enemy = this.enemies.create(1100, groundY - 100, "enemy");
 
         // Använd din befintliga logik:
         enemy.setVelocityX(-200); // Lite snabbare för mer utmaning?
