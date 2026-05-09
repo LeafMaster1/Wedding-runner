@@ -159,8 +159,6 @@ export class Game extends Scene {
         EventBus.emit("current-scene-ready", this);
     }
 
-    // TODO: if sats som kollar om spelare krockar med fiende, isåfall gameover
-    // TODO: fiender som spawnar och rör sig mot spelaren
     // TODO: power-ups som spawnar och ger poäng eller tillfälliga förmågor
     // TODOD: extra poäng om spelaren hoppar över fiender eller samlar power-ups
 
@@ -180,6 +178,24 @@ export class Game extends Scene {
         }
 
         this.enemies.getChildren().forEach((enemy: any) => {
+            if (!enemy.getData('scored') && enemy.x < this.player.x) {
+             
+             // Ge extra poäng
+             this.score += 10;
+            
+            // Markera fienden som "poängsatt" så vi inte ger poäng igen nästa frame
+            enemy.setData('scored', true);
+            
+            // Valfritt: Logga i konsolen för att se att det händer
+            console.log("+10 POÄNG FÖR HOPP!");
+            
+
+            // kanske ska tabort senare beror på 
+            this.scoreText.setColor('#1dff09'); // Blir grön för en sekund
+            this.time.delayedCall(500, () => {
+            this.scoreText.setColor('#ffffff'); // Tillbaka till vit
+    });
+        }
             if (enemy.x < -100) {
                 enemy.destroy(); // Tar bort fienden permanent när den är utanför bild
             }
