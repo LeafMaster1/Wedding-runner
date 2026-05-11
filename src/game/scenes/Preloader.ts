@@ -51,13 +51,13 @@ export class Preloader extends Scene
         // });
 
         // walking enemy
-        //         this.load.spritesheet('enemy', 'wedding-enemy-walk-fixed.png',{
-        //     frameWidth:364,
-        //     frameHeight: 360
-        // });
+                this.load.spritesheet('enemyWalk', 'wedding-enemy-walk-fixed.png',{
+            frameWidth:364,
+            frameHeight: 360
+        });
 
         // enemy run 
-        this.load.spritesheet('enemy', 'wedding-enemy-run-animation-fix.png',{
+        this.load.spritesheet('enemyRun', 'wedding-enemy-run-animation-fix.png',{
             frameWidth:364,
             frameHeight: 360
         });

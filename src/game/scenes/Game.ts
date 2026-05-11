@@ -58,14 +58,25 @@ export class Game extends Scene {
             repeat: -1,
         });
         // enemy animation
-        if (!this.anims.exists("enemy-walk")) {
+        if (!this.anims.exists("enemy-run")) {
             this.anims.create({
-                key: "enemy-walk",
-                frames: this.anims.generateFrameNumbers("enemy", {
+                key: "enemy-run",
+                frames: this.anims.generateFrameNumbers("enemyRun", {
                     start: 0,
                     end: 7, // 3 orginal || walk 7
                 }),
-                frameRate: 7, // 8 orginal || walk 7 
+                frameRate: 10, // 8 orginal || walk 7 
+                repeat: -1
+            });
+        }
+        if (!this.anims.exists("enemy-walk")) {
+        this.anims.create({
+                key: "enemy-walk",
+                frames: this.anims.generateFrameNumbers("enemyWalk", {
+                    start: 0,
+                    end: 7,
+                }),
+                frameRate: 10, 
                 repeat: -1
             });
         }
@@ -288,19 +299,24 @@ export class Game extends Scene {
     }
     spawnEnemy() {
         if (!this.enemies || !this.gameActive) return;
-        // logging om fiende spawnar
-        console.log("Försöker spawna fiende...");
+        
+                // skapar en array av fienderna
+                const enemyTypes = [
+                    {key:'enemyWalk',anim: 'enemy-walk'},
+                    {key:'enemyRun',anim: 'enemy-run'}
+                ];
+                const type = Phaser.Utils.Array.GetRandom(enemyTypes);
 
         // Skapa en ny fiende i gruppen
         const groundY = 600;
-        const enemy = this.enemies.create(1100, groundY - 100, "enemy");
+        const enemy = this.enemies.create(1100, groundY - 100, type.key);
 
         // Använd din befintliga logik:
         enemy.setVelocityX(-this.currentSpeed); // samma speed som spelare
         enemy.setScale(0.4);
-        enemy.anims.play("enemy-walk");
-        enemy.setBodySize(200, 300, true);
+        enemy.anims.play(type.anim);
 
+        enemy.setBodySize(200, 300, true);
         // Valfritt: Slumpmässig hastighet för att göra det svårare
         // enemy.setVelocityX(-(200 + Math.random() * 200));
     }
