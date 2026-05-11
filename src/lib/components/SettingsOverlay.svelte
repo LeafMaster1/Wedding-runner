@@ -1,8 +1,30 @@
 <script lang="ts">
+    import { EventBus } from "../../game/EventBus";
+    import  { audioSettings } from "../audioStore";
+    
+    export {audioSettings}
     export let onClose: () => void;
     
     let volume = 50;
-    let soundEnabled = true;
+    // let soundEnabled = true;
+
+    function handleVolumeChange(e: Event)
+    {
+        const val = parseInt((e.target as HTMLInputElement).value) /100;
+        audioSettings.update(s => ({...s, volume:val}));
+        EventBus.emit('change-volume',val);
+    }
+    function toggleMute()
+    {
+        audioSettings.update(s => {
+            const newMuted= !s.isMuted;
+            EventBus.emit('change-muted',newMuted);
+            return {...s,isMuted: newMuted};
+        });
+    }
+  
+
+   
 </script>
 
 <div class="settings-overlay">
@@ -12,17 +34,18 @@
         <div class="settings-content">
             <div class="setting-item">
                 <label for="volume">VOLYM: {volume}%</label>
-                <input type="range" id="volume" bind:value={volume} min="0" max="100" />
+                <input
+                 type="range"
+                value={$audioSettings.volume * 100}
+                on:input={handleVolumeChange} min="0" max="100" />
             </div>
 
             <div class="setting-item">
-                <label>LJUD: {soundEnabled ? 'PÅ' : 'AV'}</label>
+                <!-- <label>LJUD: {$audioSettings.isMuted ? 'PÅ' : 'AV'}</label> -->
                 <button 
                     class="toggle-btn" 
-                    class:active={soundEnabled} 
-                    on:click={() => soundEnabled = !soundEnabled}
-                >
-                    {soundEnabled ? 'STÄNG AV' : 'SÄTT PÅ'}
+                    on:click={toggleMute}>
+                    {$audioSettings.isMuted ? 'SÄTT PÅ' : 'STÄNG AV'}
                 </button>
             </div>
         </div>
