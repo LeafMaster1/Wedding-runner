@@ -62,6 +62,10 @@ export class Preloader extends Scene
             frameHeight: 360
         });
 
+        // POWER UP!
+        this.load.image('beer', 'beer-powerUp.png')
+        this.load.image('chips', 'chips-powerUp.png')
+
         // this.load.spritesheet('enemy', 'enemy-SpriteSheet-No-background.png', {
         //     frameWidth: 384, // 256
         //     frameHeight: 512 // 256 

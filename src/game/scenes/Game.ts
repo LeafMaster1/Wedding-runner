@@ -11,7 +11,7 @@ export class Game extends Scene {
     // enemy!: Phaser.Physics.Arcade.Sprite;
     enemies!: Phaser.Physics.Arcade.Group;
     currentSpeed: number = 250;
-    
+    powerUps!: Phaser.Physics.Arcade.Group;
 
     constructor() {
         super("Game");
@@ -65,19 +65,19 @@ export class Game extends Scene {
                     start: 0,
                     end: 7, // 3 orginal || walk 7
                 }),
-                frameRate: 10, // 8 orginal || walk 7 
-                repeat: -1
+                frameRate: 10, // 8 orginal || walk 7
+                repeat: -1,
             });
         }
         if (!this.anims.exists("enemy-walk")) {
-        this.anims.create({
+            this.anims.create({
                 key: "enemy-walk",
                 frames: this.anims.generateFrameNumbers("enemyWalk", {
                     start: 0,
                     end: 7,
                 }),
-                frameRate: 10, 
-                repeat: -1
+                frameRate: 10,
+                repeat: -1,
             });
         }
 
@@ -85,8 +85,7 @@ export class Game extends Scene {
 
         // Skapa fienden och starta dess animation
         // this.enemy.setFlipX(true);  Vänd fienden så den ser mot vänster
-        
-        
+
         // this.enemy = this.physics.add.sprite(1100, groundY - 300, "enemy"); // 1100 -300
         // this.enemy.setVelocityX(-200); // Fienden rör sig mot vänster
         // this.enemy.setScale(0.4);
@@ -96,7 +95,7 @@ export class Game extends Scene {
         // this.physics.add.collider(this.enemies, ground);
 
         // spawna fler enemies
-        // spwana en enemy först 
+        // spwana en enemy först
         this.spawnEnemy();
         this.time.addEvent({
             delay: 2500,
@@ -131,8 +130,30 @@ export class Game extends Scene {
             this.enemies,
             () => this.gameOver(),
             undefined,
-            this
+            this,
         );
+
+        // POWER UP!
+       
+        this.powerUps = this.physics.add.group();
+
+        this.physics.add.overlap(
+            this.player,
+            this.powerUps,
+            (player,item) => {
+                this.collectPowerUp(player, item);
+
+            },
+            undefined,
+            this,
+        );
+
+        this.time.addEvent({
+            delay: 5000,
+            callback: this.spawnPowerUp,
+            callbackScope: this,
+            loop: true,
+        });
 
         // 7. Mobilkontroller
         this.setupControls();
@@ -189,27 +210,37 @@ export class Game extends Scene {
         }
 
         this.enemies.getChildren().forEach((enemy: any) => {
-            if (!enemy.getData('scored') && enemy.x < this.player.x) {
-             
-             // Ge extra poäng
-             this.score += 10;
-            
-            // Markera fienden som "poängsatt" så vi inte ger poäng igen nästa frame
-            enemy.setData('scored', true);
-            
-            // Valfritt: Logga i konsolen för att se att det händer
-            console.log("+10 POÄNG FÖR HOPP!");
-            
+            if (!enemy.getData("scored") && enemy.x < this.player.x) {
+                // Ge extra poäng
+                this.score += 10;
 
-            // kanske ska tabort senare beror på 
-            this.scoreText.setColor('#1dff09'); // Blir grön för en sekund
-            this.time.delayedCall(500, () => {
-            this.scoreText.setColor('#ffffff'); // Tillbaka till vit
-    });
-        }
+                // Markera fienden som "poängsatt" så vi inte ger poäng igen nästa frame
+                enemy.setData("scored", true);
+
+                // Valfritt: Logga i konsolen för att se att det händer
+                console.log("+10 POÄNG FÖR HOPP!");
+
+                // kanske ska tabort senare beror på
+                this.scoreText.setColor("#1dff09"); // Blir grön för en sekund
+                this.time.delayedCall(500, () => {
+                    this.scoreText.setColor("#ffffff"); // Tillbaka till vit
+                });
+            }
             if (enemy.x < -100) {
                 enemy.destroy(); // Tar bort fienden permanent när den är utanför bild
             }
+            this.powerUps.getChildren().forEach((item: any) => {
+                if (item.getData("isPowerUp")) {
+                    // Sick-sack formel:
+                    // time * 0.005 styr hur snabbt den svänger (frekvens)
+                    // 50 styr hur högt/lågt den svänger (amplitud)
+                    const movement = Math.sin(time * 0.005) * 50;
+                    item.y = item.getData("startY") + movement;
+                }
+
+                // Ta bort om den flyger utanför skärmen
+                if (item.x < -100) item.destroy();
+            });
         });
 
         // if (this.enemy.x < -100) {
@@ -217,12 +248,69 @@ export class Game extends Scene {
         //     this.enemy.setVelocityX(-200 + Math.random() * 200); // Variera hastigheten lite
         // }
 
-
         this.currentSpeed += delta * 0.005;
 
         this.score += delta * 0.02;
         this.scoreText.setText("POÄNG: " + Math.floor(this.score));
     }
+
+    spawnPowerUp() {
+        if(!this.gameActive)return;
+
+        const types = [
+            {key:'beer', type: 'invincible'},
+            {key:'chips', type: 'high-jump'}
+        ];
+        const pick = Phaser.Utils.Array.GetRandom(types);
+
+        const startY = 300; //höjd
+        const item = this.powerUps.create(1100, startY, pick.key);
+        item.setScale(0.2);
+         if (item.body) {
+            item.body.allowGravity = false; 
+        }
+        item.setVelocityX(-200); // Flyger mot spelaren
+
+        // Vi sparar starttiden och start-Y för att räkna ut sick-sack-rörelsen i update
+        item.setData("powerUpType", pick.type);
+        item.setData("startY", startY);
+        item.setData("isPowerUp", true);
+    }
+
+    collectPowerUp(player:any,item:any){
+        const type = item.getData("powerUpType");
+        item.destroy();
+
+        if(type === 'high-jump'){
+            this.activateHighJump();
+        }else if(type === 'invincible'){
+            this.activateInvincibility();
+        }
+    }
+    activateHighJump(){
+        console.log("CHIPS! hoppar högre!");
+        this.player.setTint(0xffff00);
+        this.player.setData('isHighJumper',true);
+
+        this.time.delayedCall(7000, () => {
+            this.player.setData('isHighJumper', false);
+            this.player.clearTint();
+        });
+    }
+    activateInvincibility() {
+        console.log("ÖL! Odödlig!");
+
+        this.player.setAlpha(0.5);
+        this.player.setTint(0x00ff00);
+        this.player.setData('isInvincible', true);
+
+        this.time.delayedCall(7000, () => {
+            this.player.setData('isInvincible', false);
+            this.player.clearTint();
+            this.player.setAlpha(1);
+        });
+    }
+
 
     handleInput() {
         const cursors = this.input.keyboard!.createCursorKeys();
@@ -239,7 +327,8 @@ export class Game extends Scene {
         }
 
         if ((cursors.up.isDown || cursors.space.isDown) && body.touching.down) {
-            this.player.setVelocityY(-600);
+            const jumpPower = this.player.getData('isHighJumper') ? -900 : -600;
+            this.player.setVelocityY(jumpPower);
         }
     }
 
@@ -257,7 +346,8 @@ export class Game extends Scene {
 
         jumpButton.on("pointerdown", () => {
             if (this.player.body!.touching.down) {
-                this.player.setVelocityY(-600);
+                const jumpPower = this.player.getData('isHighJumper') ? -900 : -600;
+                this.player.setVelocityY(jumpPower);
             }
         });
 
@@ -299,13 +389,13 @@ export class Game extends Scene {
     }
     spawnEnemy() {
         if (!this.enemies || !this.gameActive) return;
-        
-                // skapar en array av fienderna
-                const enemyTypes = [
-                    {key:'enemyWalk',anim: 'enemy-walk'},
-                    {key:'enemyRun',anim: 'enemy-run'}
-                ];
-                const type = Phaser.Utils.Array.GetRandom(enemyTypes);
+
+        // skapar en array av fienderna
+        const enemyTypes = [
+            { key: "enemyWalk", anim: "enemy-walk" },
+            { key: "enemyRun", anim: "enemy-run" },
+        ];
+        const type = Phaser.Utils.Array.GetRandom(enemyTypes);
 
         // Skapa en ny fiende i gruppen
         const groundY = 600;
@@ -321,6 +411,7 @@ export class Game extends Scene {
         // enemy.setVelocityX(-(200 + Math.random() * 200));
     }
     gameOver() {
+        if(this.player.getData('isInvincible'))return;
         if (this.gameActive === false) return;
 
         this.gameActive = false;
