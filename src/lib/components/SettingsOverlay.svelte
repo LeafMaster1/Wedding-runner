@@ -5,13 +5,20 @@
     export {audioSettings}
     export let onClose: () => void;
     
-    let volume = 50;
+    // let volume = 50;
     // let soundEnabled = true;
 
     function handleVolumeChange(e: Event)
     {
-        const val = parseInt((e.target as HTMLInputElement).value) /100;
+        const input = e.target as HTMLInputElement;
+        const rawValue = parseInt(input.value);
+
+        const val = rawValue / 100;
+
+        // const val = parseInt((e.target as HTMLInputElement).value) /100;
+        
         audioSettings.update(s => ({...s, volume:val}));
+        
         EventBus.emit('change-volume',val);
     }
     function toggleMute()
@@ -33,11 +40,15 @@
         
         <div class="settings-content">
             <div class="setting-item">
-                <label for="volume">VOLYM: {volume}%</label>
+                <label for="volume">VOLYM: {Math.round($audioSettings.volume *100)}%</label>
                 <input
+                 id="volume"
                  type="range"
+                 min="0"
+                 max="100"
+                 step="1"
                 value={$audioSettings.volume * 100}
-                on:input={handleVolumeChange} min="0" max="100" />
+                on:input={handleVolumeChange} />
             </div>
 
             <div class="setting-item">
