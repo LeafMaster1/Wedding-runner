@@ -56,7 +56,7 @@
                 <button 
                     class="toggle-btn" 
                     on:click={toggleMute}>
-                    {$audioSettings.isMuted ? 'SÄTT PÅ' : 'STÄNG AV'}
+                    {$audioSettings.isMuted ? 'LJUD PÅ' : 'LJUD AV'}
                 </button>
             </div>
         </div>

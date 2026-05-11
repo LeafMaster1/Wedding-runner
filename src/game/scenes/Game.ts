@@ -63,10 +63,10 @@ export class Game extends Scene {
                 key: "enemy-walk",
                 frames: this.anims.generateFrameNumbers("enemy", {
                     start: 0,
-                    end: 3,
+                    end: 7, // 3 orginal || walk 7
                 }),
-                frameRate: 8,
-                repeat: -1,
+                frameRate: 7, // 8 orginal || walk 7 
+                repeat: -1
             });
         }
 
