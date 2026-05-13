@@ -9,6 +9,31 @@
     --color-white: #ffffff;
 
     box-sizing: border-box;
+    --overlay-padding: 2rem;
+    --card-width: 90%;
+    --font-size-title: clamp(2rem, 8vw, 3.5rem);
+}
+
+/* Om skärmen är liten (mobil) */
+@media (max-width: 600px) {
+    :root {
+        --overlay-padding: 1rem;
+        --card-width: 95%;
+    }
+}
+
+/* Om skärmen är låg (liggande mobil) */
+@media (max-height: 500px) {
+    :root {
+        --font-size-title: 1.5rem;
+    }
+
+    /* Tvinga alla "kort" att bli skrollbara globalt */
+    [class$="-card"] {
+        max-height: 85vh !important;
+        overflow-y: auto !important;
+        padding: 1rem !important;
+    }
 }
 
 *,
@@ -54,9 +79,11 @@ body {
     color: var(--color-white);
     backdrop-filter: blur(5px);
 }
-.btn:active{
+
+.btn:active {
     transform: scale(0.96);
 }
+
 .btn:hover {
     background: var(--color-white);
     color: var(--color-primary);
