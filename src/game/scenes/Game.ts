@@ -18,6 +18,7 @@ export class Game extends Scene {
     }
 
     create() {
+        this.restartGame();
         this.score = 0;
         this.gameActive = true;
 
@@ -420,5 +421,12 @@ export class Game extends Scene {
         this.physics.pause();
         this.player.anims.stop();
         this.scene.start("GameOver", { score: Math.floor(this.score) });
+    }
+
+    restartGame(){
+        this.currentSpeed =250;
+        this.score = 0;
+        this.gameActive = true;
+
     }
 }
