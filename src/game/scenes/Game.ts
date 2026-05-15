@@ -126,6 +126,7 @@ export class Game extends Scene {
         // this.physics.add.collider(this.enemy, ground);
         this.physics.add.collider(this.enemies, ground);
 
+        // kollar om spelare och fiender krockar = game over !
         this.physics.add.overlap(
             this.player,
             this.enemies,
@@ -155,6 +156,11 @@ export class Game extends Scene {
             callbackScope: this,
             loop: true,
         });
+
+        // DEBUG: Tryck på 'P' för att spawna en power-up direkt vid spelaren
+        // this.input.keyboard?.on('keydown-P', () => {
+        //     this.spawnDebugPowerUp();
+        // });
 
         // 7. Mobilkontroller
         this.setupControls();
@@ -266,9 +272,12 @@ export class Game extends Scene {
 
         const startY = 300; //höjd
         const item = this.powerUps.create(1100, startY, pick.key);
-        item.setScale(0.2);
+        item.setScale(0.14);
          if (item.body) {
             item.body.allowGravity = false; 
+            // JUSTERA HITBOX HÄR: setBodySize(bredd, höjd, center)
+            item.setBodySize(200, 600,  true);
+            item.setOffset(400, 300);
         }
         item.setVelocityX(-200); // Flyger mot spelaren
 
@@ -277,6 +286,23 @@ export class Game extends Scene {
         item.setData("startY", startY);
         item.setData("isPowerUp", true);
     }
+
+    // DEBUG FUNKTION: Spawna en stillastående power-up för att kolla hitbox
+    // spawnDebugPowerUp() {
+    //     console.log("DEBUG: Spawna stationary power-up");
+    //     const item = this.powerUps.create(this.player.x + 200, 300, 'beer');
+    //     item.setScale(0.14);
+    //     if (item.body) {
+    //         item.body.allowGravity = false;
+    //         // Använd samma hitbox som i den vanliga spawnen
+    //         item.setBodySize(200, 600,  true);
+    //         item.setOffset(400, 300); 
+    //     }
+    //     item.setVelocityX(0); // Stillastående
+    //     item.setData("powerUpType", 'invincible');
+    //     item.setData("startY", 300);
+    //     item.setData("isPowerUp", false); // false så den inte börjar svänga i update
+    // }
 
     collectPowerUp(player:any,item:any){
         const type = item.getData("powerUpType");
