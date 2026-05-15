@@ -90,6 +90,15 @@ body {
     border: 2px solid var(--color-primary);
 }
 
+.btn:disabled {
+    background: #ccc !important;
+    color: #888 !important;
+    border-color: #ddd !important;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
 .btn-outline {
     background: transparent;
     color: var(--color-primary);
