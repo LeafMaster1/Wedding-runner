@@ -29,7 +29,10 @@
             {/if}
         </div>
 
-        <button on:click={onClose}>TILLBAKA</button>
+        <div class="button-container">
+            <button class="btn btn-outline" on:click={onClose}>TILLBAKA</button>
+        </div>
+
     </div>
 </div>
 
@@ -43,7 +46,7 @@
         justify-content: center;
         align-items: center;
         z-index: 1000;
-        padding: 20px;
+        padding: var(--overlay-padding);
         box-sizing: border-box;
     }
 
@@ -53,9 +56,9 @@
         background-position: center;
         color: black;
         font-family: Helvetica;
-        padding: 2.5rem 1.5rem;
+        /* padding: 2.5rem 1.5rem; */
         border-radius: 25px;
-        width: 100%;
+        width: var(--card-width);
         max-width: 400px;
         text-align: center;
         box-shadow: 0 0 30px var(--color-primary);
@@ -66,18 +69,20 @@
     }
 
     h2 {
-        font-size: 2.2rem;
-        margin-top: 1.5rem;
-        margin-bottom: 1.5rem;
+        font-size: clamp(1.3rem, 7vw, 2.5rem);
+        /* margin-top: 1.5rem; */
+        margin: 1.5rem 0;
+        /* margin-bottom: 1.5rem; */
         color: var(--color-primary);
         font-family: 'Arial Black', sans-serif;
         letter-spacing: 2px;
+        text-shadow: 2px 2px 0px white;
     }
 
     .score-list {
-        margin: 1.5rem;
-        max-height: 50vh;
-        overflow-y: scroll; /* Alltid rullbar */
+        margin: 0.8rem;
+        max-height: 40vh;
+        overflow-y: auto; /* Alltid rullbar */
         -webkit-overflow-scrolling: touch; /* Mjuk rullning på iPhone */
         padding: 10px;
         
@@ -135,7 +140,7 @@
     .points { font-weight: bold; }
     .empty-msg { opacity: 0.6; font-style: italic; }
 
-    button {
+    /* button {
         width: calc(100% - 3rem);
         margin: 0 1.5rem 1.5rem 1.5rem;
         padding: 1.1rem;
@@ -152,5 +157,48 @@
         color: var(--color-primary);
         border: 2px solid var(--color-primary);
     }
-    button:active { transform: scale(0.95); }
+    button:active { transform: scale(0.95); } */
+    .btn{
+        width: 100%;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        white-space: nowrap;
+        font-size: clamp(1rem, 5vw, 1.4rem) !important;
+        padding: 0.8rem !important;
+        min-height: 45px;
+    }
+
+    .button-container{
+        padding: 0 0.8rem 1.2rem 0.8rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media(max-height: 500px){
+        .highscore-card{
+            margin: 0.5rem 0;
+            padding-bottom: 0.5rem;
+        }
+        h2{
+            font-size: 1.3rem;
+            margin: 0.4rem 0;
+        }
+        .score-list{
+            max-height: 35vh;
+            margin: 0.5rem 1rem;
+        }
+        .score-item{
+            padding: 0.5rem 1rem;
+        }
+        .button-container{
+            padding: 0 1rem 0.8rem 1rem
+        }
+        :global(.btn){
+            padding: 0.8rem !important;
+            min-height: 45px !important;
+            font-size: 1.1rem !important;
+        }
+    }
 </style>
