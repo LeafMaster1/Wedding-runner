@@ -51,17 +51,19 @@
                 on:input={handleVolumeChange} />
             </div>
 
+            <div class="spacer"></div>
+
             <div class="setting-item">
-                <!-- <label>LJUD: {$audioSettings.isMuted ? 'PÅ' : 'AV'}</label> -->
                 <button 
-                    class="toggle-btn" 
+                    class="btn" 
                     on:click={toggleMute}>
                     {$audioSettings.isMuted ? 'LJUD PÅ' : 'LJUD AV'}
                 </button>
             </div>
+                <div class="setting-item">
+                    <button class="btn" on:click={onClose}>TILLBAKA</button>
+                </div>
         </div>
-
-        <button class="back-btn" on:click={onClose}>TILLBAKA</button>
     </div>
 </div>
 
@@ -73,10 +75,11 @@
         background: rgba(0, 0, 0, 0.85);
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
         z-index: 1000;
-        padding: 15px;
+        padding: var(--overlay-padding);
         box-sizing: border-box;
+        overflow-y: auto;
     }
 
     .settings-card {
@@ -84,51 +87,72 @@
         background-size: cover;
         background-position: center;
         border-radius: 30px;
-        width: 95%;
+        width: var(--card-width);
         max-width: 500px;
-        min-height: 50vh;
+        margin: auto 0;
         display: flex;
         flex-direction: column;
         text-align: center;
         box-shadow: 0 0 40px var(--color-primary);
         position: relative;
         overflow: hidden;
-        /* background-color: rgba(255, 255, 255, 0.3); */
         background-blend-mode: lighten;
     }
 
     h2 {
-        font-size: 2.5rem;
+        /* font-size: var(--font-size-title); */
+        font-size: clamp(1.4rem, 6vw, 2.6rem);
         margin: 1.5rem 0;
         color: var(--color-primary);
         font-family: 'Arial Black', sans-serif;
         text-shadow: 2px 2px 0px white, -2px -2px 0px white;
+
+        letter-spacing: -1px;
+        max-width: 100%;
+        overflow-wrap: break-word;
+        line-height: 1.1;
     }
 
     .settings-content {
         margin: 0 1.5rem 1.5rem 1.5rem;
-        padding: 2rem;
-        /* background: rgba(255, 255, 255, 0.7); */
-        /* backdrop-filter: blur(0); */
+        padding: 1rem;
         border-radius: 20px;
         flex-grow: 1;
         display: flex;
         flex-direction: column;
-        gap: 5rem;
+        /* gap: 5rem; */
+        gap: 1rem;
+        /* justify-content: space-between; */
+    }
+    .spacer{
+        flex-grow: 1;
+        min-height: 5rem;
+    }
+    .btn{
+        display: flex;
+        gap: 0.8;
+        width: 100%;
+        min-height: 55px;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        white-space: nowrap;
+        
     }
 
     .setting-item {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        /* gap: 10px; */
         text-align: left;
+        
     }
 
     label {
         font-weight: bold;
         font-size: 1.2rem;
         color: var(--color-primary);
-        text-shadow: 1px 1px 0px var(--color-primary), -1px -1px 0px var(--color-white);
+        text-shadow: 1px 1px 0px white, -1px -1px 0px white;
         font-family: sans-serif;
     }
 
@@ -136,46 +160,45 @@
         width: 100%;
         accent-color: var(--color-primary);
         cursor: pointer;
+        height: 2rem;
     }
+    @media(max-height: 500px){
+        .spacer{
+            display: none;
+        }
+        .settings-card{
+            width: 98%;
+            max-width: 800px;
+            height: 98%;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        h2{
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+        }
+        .settings-content{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            padding: 0.5rem;
+            align-items: end;
+        }
+        .setting-item:first-child{
+            grid-column: span 2;
+        }
+        .setting-item{
+            width: 100%;
+        }
+        
+        :global(.btn){
+            height: 100% !important;
+            min-height: 50px !important;
+            padding: 0.5rem !important;
+            font-size: 1.1rem !important;
+        }
 
-    .toggle-btn {
-       margin: 1rem 1.5rem 1.5rem 1.5rem;
-        padding: 1.2rem;
-        background: var(--color-primary);
-        color: var(--color-white);
-        border: 2px solid var(--color-white);
-        border-radius: 50px;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 1.2rem;
+        
+        
     }
-        .toggle-btn:hover {
-    background: var(--color-white);
-        color: var(--color-primary);
-        border: 2px solid var(--color-primary);
-    }
-    .toggle-btn:hover.active{
-        background: var(--color-white);
-        color: var(--color-primary);
-        border: 2px solid var(--color-primary);
-    }
-    .back-btn {
-        margin: 1rem 1.5rem 1.5rem 1.5rem;
-        padding: 1.2rem;
-        background: var(--color-primary);
-        color: var(--color-white);
-        border: 2px solid var(--color-white);
-        border-radius: 50px;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 1.2rem;
-    }
-    .back-btn:hover {
-        background: var(--color-white);
-        color: var(--color-primary);
-        border: 2px solid var(--color-primary);
-    }
-        .back-btn:active { transform: scale(0.95); }
-
-    button:active { transform: scale(0.95); }
 </style>
