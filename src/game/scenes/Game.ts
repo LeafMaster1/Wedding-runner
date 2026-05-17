@@ -154,7 +154,7 @@ export class Game extends Scene {
         );
 
         this.time.addEvent({
-            delay: 5000,
+            delay: 7000,
             callback: this.spawnPowerUp,
             callbackScope: this,
             loop: true,
