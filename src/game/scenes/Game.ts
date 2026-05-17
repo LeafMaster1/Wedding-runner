@@ -12,6 +12,9 @@ export class Game extends Scene {
     enemies!: Phaser.Physics.Arcade.Group;
     currentSpeed: number = 250;
     powerUps!: Phaser.Physics.Arcade.Group;
+    powerUpTimer?: Phaser.Time.TimerEvent;
+    powerUpBlinkTimer?: Phaser.Time.TimerEvent; // för att veta när blinket ska starta
+    powerUpTween?: Phaser.Tweens.Tween; // för att stoppa blinket
 
     constructor() {
         super("Game");
@@ -315,26 +318,90 @@ export class Game extends Scene {
         }
     }
     activateHighJump(){
+
+        if (this.powerUpTimer){
+            this.powerUpTimer.remove();
+        }
+        if (this.powerUpBlinkTimer) this.powerUpBlinkTimer.remove();
+        if (this.powerUpTween) this.powerUpTween.stop();
+
+        this.player.setAlpha(1);
+        this.player.clearTint();
+
         console.log("CHIPS! hoppar högre!");
+        this.showPowerUpText("SUPER HOPP!", "#ffff00");
+
+        this.cameras.main.flash(300, 255, 255 ,0);
+        
         this.player.setTint(0xffff00);
         this.player.setData('isHighJumper',true);
 
-        this.time.delayedCall(7000, () => {
+        this.powerUpBlinkTimer = this.time.delayedCall(3000, () => {
+            this.powerUpTween = this.tweens.add({
+                targets: this.player,
+                alpha: 0.3,
+                duration: 100,
+                yoyo: true,
+                repeat: 10
+            });
+        });
+
+        this.powerUpTimer = this.time.delayedCall(5000, () => {
             this.player.setData('isHighJumper', false);
             this.player.clearTint();
+            this.player.setAlpha(1);
+            this.powerUpTimer = undefined;
         });
     }
     activateInvincibility() {
+        if(this.powerUpTimer){
+            this.powerUpTimer.remove();
+        }
+        if (this.powerUpBlinkTimer) this.powerUpBlinkTimer.remove();
+        if (this.powerUpTween) this.powerUpTween.stop();
+
         console.log("ÖL! Odödlig!");
+        this.showPowerUpText("ODÖDLIG!", "#00ff00");
+        this.cameras.main.flash(300, 0, 255, 0);
 
         this.player.setAlpha(0.5);
+        this.player.clearTint();
         this.player.setTint(0x00ff00);
         this.player.setData('isInvincible', true);
 
-        this.time.delayedCall(7000, () => {
+         this.powerUpBlinkTimer = this.time.delayedCall(3000, () => {
+            this.powerUpTween = this.tweens.add({
+                targets: this.player,
+                alpha: 0.3,
+                duration: 100,
+                yoyo: true,
+                repeat: 10
+            });
+        });
+
+       this.powerUpTimer = this.time.delayedCall(5000, () => {
             this.player.setData('isInvincible', false);
             this.player.clearTint();
             this.player.setAlpha(1);
+            this.powerUpTimer = undefined;
+        });
+    }
+    showPowerUpText(text: string, color: string) {
+         const pText = this.add.text(this.player.x, this.player.y - 50, text, {
+             fontSize: '42px',
+             fontStyle: 'bold',
+             color: color,
+             stroke: '#000000',
+            strokeThickness: 6
+        }).setOrigin(0.5);
+   
+        // Animera texten uppåt och tona ut den
+        this.tweens.add({
+            targets: pText,
+            y: pText.y - 100,
+            alpha: 0,
+            duration: 1000,
+            onComplete: () => pText.destroy()
         });
     }
 
