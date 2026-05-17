@@ -118,8 +118,8 @@ export class Game extends Scene {
 
         // 5. Hitbox-justering
         const body = this.player.body as Phaser.Physics.Arcade.Body;
-        body.setSize(100, 250);
-        body.setOffset(25, 30);
+        body.setSize(100, 160);
+        body.setOffset(25, 110);
 
         // 6. Kollision
         this.physics.add.collider(this.player, ground);
