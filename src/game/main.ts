@@ -25,10 +25,12 @@ const config: Phaser.Types.Core.GameConfig = {
         default: 'arcade',
         arcade: {
             gravity: { y: 1150, x: 0 },
-            // debug: true
-             // ska ändra till false innan release OBS!!!!!!!!
+            debug: false // ska ändra till false innan release OBS!!!!!!!!
             
         }
+    },
+    input: {
+        activePointers: 3
     },
     scene: [
         Boot,

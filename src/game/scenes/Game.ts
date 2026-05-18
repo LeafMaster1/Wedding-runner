@@ -428,7 +428,7 @@ export class Game extends Scene {
 
     setupControls() {
         this.player.setData("isMovingMobile", false);
-        const buttonY = 684; // Mitten av footern
+        const buttonY = 650; // Flyttad upp från 684 för att inte klippas
 
         // Hopp-knapp (Längst till höger)
         const jumpButton = this.add
@@ -458,10 +458,13 @@ export class Game extends Scene {
             this.player.setVelocityX(-300);
         });
 
-        leftButton.on("pointerup", () => {
+        const stopMoving = () => {
             this.player.setData("isMovingMobile", false);
             this.player.setVelocityX(0);
-        });
+        };
+
+        leftButton.on("pointerup", stopMoving);
+        leftButton.on("pointerout", stopMoving);
 
         // Höger-knapp
         const rightButton = this.add
@@ -476,10 +479,8 @@ export class Game extends Scene {
             this.player.setVelocityX(300);
         });
 
-        rightButton.on("pointerup", () => {
-            this.player.setData("isMovingMobile", false);
-            this.player.setVelocityX(0);
-        });
+        rightButton.on("pointerup", stopMoving);
+        rightButton.on("pointerout", stopMoving);
     }
     spawnEnemy() {
         if (!this.enemies || !this.gameActive) return;
