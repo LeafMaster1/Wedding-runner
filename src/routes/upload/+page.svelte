@@ -42,8 +42,8 @@
 
             // Inställningar för komprimering
             const options = {
-                maxSizeMB: 1, // Max 1MB per bild (räcker gott för skärmar)
-                maxWidthOrHeight: 1920, // Max Full-HD upplösning
+                maxSizeMB: 3, // Max 1MB per bild (räcker gott för skärmar)
+                maxWidthOrHeight: 3000, // Max Full-HD upplösning
                 useWebWorker: true,
                 fileType: "image/jpeg",
             };
