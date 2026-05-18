@@ -17,14 +17,8 @@ Absolut! För att jag ska förstå exakt var vi slutade när du startar projekte
 
 
    ### fiende
-   - fixa spritesheet så att fienden faktiskt rör på benen.
    - se över spel svårigheten om det är för lätt.
    kanske måste öka *currentSpeed: number = 250;* eller *this.currentSpeed += delta * 0.005;* <-- denna gör så fienden ökar i hastighet med tiden.
-   - fixa spritesheet för ölflaska 
-   - spritesheet för chipspåse
-   - fixa en fiende som springer
-   - fixa funktion för power-up chipsåse
-   - funktion för powerup ölflaska
 
 
   ## vercel
@@ -39,3 +33,37 @@ Absolut! För att jag ska förstå exakt var vi slutade när du startar projekte
    `OBS!` **måste göras efter hosting via Vercel**  
    - en QR kod för spele-hem sidan 
    - en QR kod för uppladdningsidan alltså **/upload** 
+
+
+
+
+
+
+## spelare 
+- don't die kod för att kolla hitboxen för spelare **godemode** för att inte dö 
+```CSharp
+ this.physics.add.overlap(
+            this.player,
+            this.powerUps,
+            (player,item) => {
+                this.collectPowerUp(player, item);
+
+            },
+            undefined,
+            this,
+        );
+
+
+```
+
+**för att ändra bildstorlek**
+
+``` CS
+ const options = {
+                maxSizeMB: 3, // Max 1MB per bild (räcker gott för skärmar)
+                maxWidthOrHeight: 3000, // Max Full-HD upplösning
+                useWebWorker: true,
+                fileType: "image/jpeg",
+            };
+
+```
