@@ -40,17 +40,20 @@ export class Game extends Scene {
         const ground = this.add.rectangle(512, groundY, 1024, 20, 0x00ff00, 0);
         this.physics.add.existing(ground, true);
 
-        // 2. Skapa Footer/Kontrollpanel längst ner
-        const footerHeight = 168; // 768 - 600
+        const footerHeight = 168;
+        const footerY = this.camera.height - footerHeight / 2;
+
         const footer = this.add.rectangle(
-            512,
-            684,
-            1024,
+            this.camera.centerX,
+            footerY,
+            this.camera.width,
             footerHeight,
             0x000000,
             0.7,
         );
         footer.setDepth(90).setScrollFactor(0);
+
+       
 
         // 3. Animationer
         this.anims.create({
@@ -139,15 +142,14 @@ export class Game extends Scene {
         );
 
         // POWER UP!
-       
+
         this.powerUps = this.physics.add.group();
 
         this.physics.add.overlap(
             this.player,
             this.powerUps,
-            (player,item) => {
+            (player, item) => {
                 this.collectPowerUp(player, item);
-
             },
             undefined,
             this,
@@ -265,21 +267,21 @@ export class Game extends Scene {
     }
 
     spawnPowerUp() {
-        if(!this.gameActive)return;
+        if (!this.gameActive) return;
 
         const types = [
-            {key:'beer', type: 'invincible'},
-            {key:'chips', type: 'high-jump'}
+            { key: "beer", type: "invincible" },
+            { key: "chips", type: "high-jump" },
         ];
         const pick = Phaser.Utils.Array.GetRandom(types);
 
         const startY = 300; //höjd
         const item = this.powerUps.create(1100, startY, pick.key);
         item.setScale(0.14);
-         if (item.body) {
-            item.body.allowGravity = false; 
+        if (item.body) {
+            item.body.allowGravity = false;
             // JUSTERA HITBOX HÄR: setBodySize(bredd, höjd, center)
-            item.setBodySize(200, 600,  true);
+            item.setBodySize(200, 600, true);
             item.setOffset(400, 300);
         }
         item.setVelocityX(-200); // Flyger mot spelaren
@@ -299,7 +301,7 @@ export class Game extends Scene {
     //         item.body.allowGravity = false;
     //         // Använd samma hitbox som i den vanliga spawnen
     //         item.setBodySize(200, 600,  true);
-    //         item.setOffset(400, 300); 
+    //         item.setOffset(400, 300);
     //     }
     //     item.setVelocityX(0); // Stillastående
     //     item.setData("powerUpType", 'invincible');
@@ -307,19 +309,18 @@ export class Game extends Scene {
     //     item.setData("isPowerUp", false); // false så den inte börjar svänga i update
     // }
 
-    collectPowerUp(player:any,item:any){
+    collectPowerUp(player: any, item: any) {
         const type = item.getData("powerUpType");
         item.destroy();
 
-        if(type === 'high-jump'){
+        if (type === "high-jump") {
             this.activateHighJump();
-        }else if(type === 'invincible'){
+        } else if (type === "invincible") {
             this.activateInvincibility();
         }
     }
-    activateHighJump(){
-
-        if (this.powerUpTimer){
+    activateHighJump() {
+        if (this.powerUpTimer) {
             this.powerUpTimer.remove();
         }
         if (this.powerUpBlinkTimer) this.powerUpBlinkTimer.remove();
@@ -331,10 +332,10 @@ export class Game extends Scene {
         console.log("CHIPS! hoppar högre!");
         this.showPowerUpText("SUPER HOPP!", "#ffff00");
 
-        this.cameras.main.flash(300, 255, 255 ,0);
-        
+        this.cameras.main.flash(300, 255, 255, 0);
+
         this.player.setTint(0xffff00);
-        this.player.setData('isHighJumper',true);
+        this.player.setData("isHighJumper", true);
 
         this.powerUpBlinkTimer = this.time.delayedCall(3000, () => {
             this.powerUpTween = this.tweens.add({
@@ -342,19 +343,19 @@ export class Game extends Scene {
                 alpha: 0.3,
                 duration: 100,
                 yoyo: true,
-                repeat: 10
+                repeat: 10,
             });
         });
 
         this.powerUpTimer = this.time.delayedCall(5000, () => {
-            this.player.setData('isHighJumper', false);
+            this.player.setData("isHighJumper", false);
             this.player.clearTint();
             this.player.setAlpha(1);
             this.powerUpTimer = undefined;
         });
     }
     activateInvincibility() {
-        if(this.powerUpTimer){
+        if (this.powerUpTimer) {
             this.powerUpTimer.remove();
         }
         if (this.powerUpBlinkTimer) this.powerUpBlinkTimer.remove();
@@ -367,44 +368,45 @@ export class Game extends Scene {
         this.player.setAlpha(0.5);
         this.player.clearTint();
         this.player.setTint(0x00ff00);
-        this.player.setData('isInvincible', true);
+        this.player.setData("isInvincible", true);
 
-         this.powerUpBlinkTimer = this.time.delayedCall(3000, () => {
+        this.powerUpBlinkTimer = this.time.delayedCall(3000, () => {
             this.powerUpTween = this.tweens.add({
                 targets: this.player,
                 alpha: 0.3,
                 duration: 100,
                 yoyo: true,
-                repeat: 10
+                repeat: 10,
             });
         });
 
-       this.powerUpTimer = this.time.delayedCall(5000, () => {
-            this.player.setData('isInvincible', false);
+        this.powerUpTimer = this.time.delayedCall(5000, () => {
+            this.player.setData("isInvincible", false);
             this.player.clearTint();
             this.player.setAlpha(1);
             this.powerUpTimer = undefined;
         });
     }
     showPowerUpText(text: string, color: string) {
-         const pText = this.add.text(this.player.x, this.player.y - 50, text, {
-             fontSize: '42px',
-             fontStyle: 'bold',
-             color: color,
-             stroke: '#000000',
-            strokeThickness: 6
-        }).setOrigin(0.5);
-   
+        const pText = this.add
+            .text(this.player.x, this.player.y - 50, text, {
+                fontSize: "42px",
+                fontStyle: "bold",
+                color: color,
+                stroke: "#000000",
+                strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+
         // Animera texten uppåt och tona ut den
         this.tweens.add({
             targets: pText,
             y: pText.y - 100,
             alpha: 0,
             duration: 1000,
-            onComplete: () => pText.destroy()
+            onComplete: () => pText.destroy(),
         });
     }
-
 
     handleInput() {
         const cursors = this.input.keyboard!.createCursorKeys();
@@ -421,36 +423,43 @@ export class Game extends Scene {
         }
 
         if ((cursors.up.isDown || cursors.space.isDown) && body.touching.down) {
-            const jumpPower = this.player.getData('isHighJumper') ? -900 : -600;
+            const jumpPower = this.player.getData("isHighJumper") ? -900 : -600;
             this.player.setVelocityY(jumpPower);
         }
     }
 
     setupControls() {
         this.player.setData("isMovingMobile", false);
-        const buttonY = 650; // Flyttad upp från 684 för att inte klippas
+        const cam = this.cameras.main;
+        const footerHeight = 168;
+        const footerY = cam.height - footerHeight / 2;
+        const gap = cam.width / 10;
+        const btnScale = Math.max(0.2, Math.min((cam.width / 1024) * 0.3, 0.5));
 
         // Hopp-knapp (Längst till höger)
         const jumpButton = this.add
-            .image(900, buttonY, "mobile-controls-jump")
+            .image(cam.width - gap, footerY, "mobile-controls-jump")
             .setInteractive({ useHandCursor: true })
             .setDepth(100)
-            .setScale(0.3)
+            .setScale(btnScale)
             .setScrollFactor(0);
 
         jumpButton.on("pointerdown", () => {
             if (this.player.body!.touching.down) {
-                const jumpPower = this.player.getData('isHighJumper') ? -900 : -600;
+                const jumpPower = this.player.getData("isHighJumper")
+                    ? -900
+                    : -600;
                 this.player.setVelocityY(jumpPower);
             }
         });
 
         // Vänster-knapp
+        // Vänster-knapp (Left)
         const leftButton = this.add
-            .image(100, buttonY, "mobile-controls-left")
+            .image(gap, footerY, "mobile-controls-left")
             .setInteractive({ useHandCursor: true })
             .setDepth(100)
-            .setScale(0.3)
+            .setScale(btnScale)
             .setScrollFactor(0);
 
         leftButton.on("pointerdown", () => {
@@ -468,10 +477,10 @@ export class Game extends Scene {
 
         // Höger-knapp
         const rightButton = this.add
-            .image(300, buttonY, "mobile-controls-right")
+            .image(cam.width / 2, footerY, "mobile-controls-right")
             .setInteractive({ useHandCursor: true })
             .setDepth(100)
-            .setScale(0.3)
+            .setScale(btnScale)
             .setScrollFactor(0);
 
         rightButton.on("pointerdown", () => {
@@ -506,7 +515,7 @@ export class Game extends Scene {
         // enemy.setVelocityX(-(200 + Math.random() * 200));
     }
     gameOver() {
-        if(this.player.getData('isInvincible'))return;
+        if (this.player.getData("isInvincible")) return;
         if (this.gameActive === false) return;
 
         this.gameActive = false;
@@ -517,10 +526,9 @@ export class Game extends Scene {
         this.scene.start("GameOver", { score: Math.floor(this.score) });
     }
 
-    restartGame(){
-        this.currentSpeed =250;
+    restartGame() {
+        this.currentSpeed = 250;
         this.score = 0;
         this.gameActive = true;
-
     }
 }
