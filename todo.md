@@ -67,3 +67,13 @@ Absolut! För att jag ska förstå exakt var vi slutade när du startar projekte
             };
 
 ```
+
+# vercel 
+Lägg till en gratis Vercel-domän
+Titta på textrutan där det står att du kan skriva in en domän. Skriv in vad du vill att din app ska heta, och avsluta med .vercel.app.
+
+Skriv till exempel:
+
+Plaintext
+
+wedding-runner.vercel.app
