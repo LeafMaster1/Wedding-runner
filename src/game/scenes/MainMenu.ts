@@ -14,7 +14,7 @@ export class MainMenu extends Scene
         // Play music
         const music = this.sound.get('homeSound') || this.sound.add('homeSound', { loop: true });
         if (!music.isPlaying) {
-            music.play({ volume: 0.2 });
+            music.play({ volume: 0.4 });
         }
 
         const settings = get(audioSettings);

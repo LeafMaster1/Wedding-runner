@@ -183,24 +183,24 @@
         font-family: "Arial Black", sans-serif;
     }
 
-    .slideshow-container {
+    /* .slideshow-container {
         position: relative;
         width: 100%;
-        height: 450px; /* Högre bildvisning */
-        background: #000; /* Svart bakgrund för bilderna */
+        height: 450px; 
+        background: #000; 
         border-radius: 20px;
         overflow: hidden;
         display: flex;
         justify-content: center;
         align-items: center;
         border: 4px solid var(--color-primary);
-    }
+    } */
 
-    .image-wrapper {
+    /* .image-wrapper {
         position: relative;
         width: 100%;
         height: 100%;
-    }
+    } */
 
     img {
         width: 100%;
@@ -240,7 +240,7 @@
         border-radius: 15px 0 0 15px;
     }
 
-    .upload-section {
+    /* .upload-section {
         background: #f9f9f9;
         padding: 1rem;
         border-radius: 15px;
@@ -263,7 +263,7 @@
     .qr-container img {
         width: 100%;
         height: 100%;
-    }
+    } */
 
     .upload-btn-action {
         background-color: var(--color-primary);
@@ -288,11 +288,11 @@
         transform: scale(0.95);
     }
 
-    .upload-link {
+    /* .upload-link {
         font-size: 0.6rem;
         color: #666;
         margin: 0;
-    }
+    } */
 
     .back-btn {
         padding: 1rem;
