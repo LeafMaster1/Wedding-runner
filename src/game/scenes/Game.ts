@@ -187,18 +187,18 @@ export class Game extends Scene {
             .setDepth(100);
 
         // Test-knapp för att dö
-        const dieButton = this.add
-            .text(512, 50, "KLICKA HÄR FÖR ATT DÖ (TEST)", {
-                fontSize: 24,
-                color: "#ffffff",
-                backgroundColor: "#e712d1",
-                padding: { x: 10, y: 5 },
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true })
-            .setDepth(100);
+        // const dieButton = this.add
+        //     .text(512, 50, "KLICKA HÄR FÖR ATT DÖ (TEST)", {
+        //         fontSize: 24,
+        //         color: "#ffffff",
+        //         backgroundColor: "#e712d1",
+        //         padding: { x: 10, y: 5 },
+        //     })
+        //     .setOrigin(0.5)
+        //     .setInteractive({ useHandCursor: true })
+        //     .setDepth(100);
 
-        dieButton.on("pointerdown", () => this.gameOver());
+        // dieButton.on("pointerdown", () => this.gameOver());
 
         EventBus.emit("current-scene-ready", this);
     }
@@ -349,6 +349,9 @@ export class Game extends Scene {
 
         this.powerUpTimer = this.time.delayedCall(5000, () => {
             this.player.setData("isHighJumper", false);
+            if(this.powerUpTween){
+                this.powerUpTween.stop();
+            }
             this.player.clearTint();
             this.player.setAlpha(1);
             this.powerUpTimer = undefined;
@@ -382,6 +385,9 @@ export class Game extends Scene {
 
         this.powerUpTimer = this.time.delayedCall(5000, () => {
             this.player.setData("isInvincible", false);
+            if(this.powerUpTween){
+                this.powerUpTween.stop();
+            }
             this.player.clearTint();
             this.player.setAlpha(1);
             this.powerUpTimer = undefined;
