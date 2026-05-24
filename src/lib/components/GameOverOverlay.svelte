@@ -1,13 +1,15 @@
 <script lang="ts">
     import { addHighScore } from '../highscoreStore';
     
-    export let score: number;
-    export let onRestart: () => void;
-    export let onToMenu: () => void;
-    export let showPictures: (() => void) | undefined = undefined;
+    let { score, onRestart, onToMenu, showPictures } = $props<{
+            score: number;
+            onRestart: () => void;
+            onToMenu: () => void;
+            showPictures?: () => void;
+       }>();
 
-    let playerName = "";
-    let submitted = false;
+    let playerName = $state("");
+    let submitted = $state(false);
 
     const handleSubmit = () => {
         if (playerName.trim().length > 0 && !submitted) {
@@ -34,22 +36,27 @@
                         placeholder="DITT NAMN" 
                         maxlength="15"
                     />
-                    <button class="btn" on:click={handleSubmit} disabled={playerName.trim().length === 0}>
+                    <button class="btn" onclick={handleSubmit} disabled={playerName.trim().length === 0}>
                         SPARA POÄNG
                     </button>
                 </div>
             {:else}
                 <div class="submitted-msg">
                     <p>Poängen är sparad!</p>
-                    <button class="btn btn-outline" on:click={onToMenu}>TILL MENYN</button>
+                    <button class="btn" onclick={onToMenu}>TILL MENYN</button>
                 </div>
             {/if}
         </div>
 
         <div class="footer-buttons">
-            <button class="btn" on:click={onRestart}>SPELA IGEN</button>
+            <button class="btn" onclick={onRestart}>SPELA IGEN</button>
+            {#if !submitted}
+                
+            <button class="btn" onclick={onToMenu}>TILL MENYN</button>
+            {/if}
+            
             {#if showPictures}
-                <button class="btn btn-outline" on:click={showPictures}>SE BILDER</button>
+                <button class="btn btn-outline" onclick={showPictures}>SE BILDER</button>
             {/if}
         </div>
     </div>
