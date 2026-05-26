@@ -1,12 +1,21 @@
 <script lang="ts">
     import { supabase } from "../../lib/supabaseClient";
     import imageCompression from "browser-image-compression";
+    import PhaserGame from "../../PhaserGame.svelte";
+    import { EventBus } from '../game/EventBus';
 
     let files: FileList | null = null;
     let uploading = false;
     let success = false;
     let previewUrl: string | null = null;
     let uploadProgress = "";
+    
+    function moveLeft(){
+        EventBus.emit('mobile-move', -300);
+    }
+    function stopMove(){
+        EventBus.emit('mobile-move', 0);
+    }
 
     function handleFileChange(e: Event) {
         const target = e.target as HTMLInputElement;
@@ -126,7 +135,16 @@
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
     />
 </svelte:head>
+<div id="app">
+<PhaserGame 
+bind:phaserRef
+currentActiveScene={currentScene}/>
+<div class="mobile.controls">
+    <button class="left-control" on:on:touchstart={() => moveLeft()} on:on:touchend={() => stopMove()}>Vänster</button>
+    <button class="right-control" on:on:touchstart={() => moveLeft()} on:on:touchend={() => stopMove()}>Höger</button>
+</div>
 
+</div>
 <div class="upload-page">
     <div class="card">
         <h1>BILDUPPLADDNING</h1>
@@ -226,6 +244,23 @@
         background-color: #f0f0f0;
         font-family: sans-serif;
     }
+    .mobile-controls {
+            position: absolute;
+            bottom: 20px; /* Hamnar i det svarta området längst ner */
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 50px;
+            pointer-events: auto; /* Se till att de går att klicka på */
+        }
+        
+        .right-control {
+            width: 80px;
+            height: 80px;
+            /* Här kan du styla knapparna med dina pilbilder som bakgrund */
+            background: url('/assets/arrow-left.png') no-repeat center;
+            background-size: contain;
+        }
 
     .upload-page {
         display: flex;
