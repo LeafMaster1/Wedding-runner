@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Scene } from "phaser";
-    import PhaserGame from "../PhaserGame.svelte";
+    import PhaserGame, { type TPhaserRef } from "../PhaserGame.svelte";
     import MainMenuOverlay from "$lib/components/MainMenuOverlay.svelte";
     import HighscoreList from "$lib/components/HighscoreList.svelte";
     import GameOverOverlay from "$lib/components/GameOverOverlay.svelte";
@@ -9,7 +9,7 @@
 
     import { EventBus } from "../game/EventBus";
 
-    let phaserRef = $state({ game: null, scene: null });
+    let phaserRef = $state<TPhaserRef>({ game: null, scene: null });
     let currentSceneName = $state("Boot");
     let showHighscore = $state(false);
     let showSettings = $state(false);
@@ -24,14 +24,28 @@
     };
 
     const startPlaying = () => {
-        phaserRef.scene.scene.start('Game');
+        if (phaserRef.scene) {
+            phaserRef.scene.scene.start('Game');
+        }
     };
 
-    // Mobilkontroller-funktioner
-    const moveLeft = () => EventBus.emit('mobile-move-left');
-    const moveRight = () => EventBus.emit('mobile-move-right');
-    const stopMove = () => EventBus.emit('mobile-stop');
-    const jump = () => EventBus.emit('mobile-jump');
+    // Mobilkontroller-funktioner med preventDefault inbyggt
+    const moveLeft = (e: Event) => {
+        e.preventDefault();
+        EventBus.emit('mobile-move-left');
+    };
+    const moveRight = (e: Event) => {
+        e.preventDefault();
+        EventBus.emit('mobile-move-right');
+    };
+    const stopMove = (e: Event) => {
+        e.preventDefault();
+        EventBus.emit('mobile-stop');
+    };
+    const jump = (e: Event) => {
+        e.preventDefault();
+        EventBus.emit('mobile-jump');
+    };
 
 </script>
 
@@ -44,26 +58,26 @@
                 <div class="left-controls">
                     <button 
                         class="ctrl-btn left" 
-                        on:touchstart|preventDefault={moveLeft} 
-                        on:touchend|preventDefault={stopMove}
-                        on:mousedown|preventDefault={moveLeft}
-                        on:mouseup|preventDefault={stopMove}
+                        ontouchstart={moveLeft} 
+                        ontouchend={stopMove}
+                        onmousedown={moveLeft}
+                        onmouseup={stopMove}
                         aria-label="Vänster"
                     ></button>
                     <button 
                         class="ctrl-btn right" 
-                        on:touchstart|preventDefault={moveRight} 
-                        on:touchend|preventDefault={stopMove}
-                        on:mousedown|preventDefault={moveRight}
-                        on:mouseup|preventDefault={stopMove}
+                        ontouchstart={moveRight} 
+                        ontouchend={stopMove}
+                        onmousedown={moveRight}
+                        onmouseup={stopMove}
                         aria-label="Höger"
                     ></button>
                 </div>
                 <div class="right-controls">
                     <button 
                         class="ctrl-btn jump" 
-                        on:touchstart|preventDefault={jump}
-                        on:mousedown|preventDefault={jump}
+                        ontouchstart={jump}
+                        onmousedown={jump}
                         aria-label="Hoppa"
                     ></button>
                 </div>
@@ -91,8 +105,8 @@
     {#if currentSceneName === "GameOver"}
         <GameOverOverlay 
             score={currentScore} 
-            onRestart={() => phaserRef.scene.scene.start('Game')} 
-            onToMenu={() => phaserRef.scene.scene.start('MainMenu')}
+            onRestart={() => phaserRef.scene?.scene.start('Game')} 
+            onToMenu={() => phaserRef.scene?.scene.start('MainMenu')}
         />
     {/if}
 </div>
@@ -141,7 +155,7 @@
         background-color: rgba(255, 255, 255, 0.15);
         border: 2px solid rgba(255, 255, 255, 0.3);
         border-radius: 50%;
-        background-size: 55%;
+        background-size: 100%;
         background-repeat: no-repeat;
         background-position: center;
         touch-action: manipulation;
@@ -179,6 +193,7 @@
             flex-direction: column; /* Stapla pilarna ovanpå varandra */
             gap: 40px;
             justify-content: center;
+            
         }
 
         .right-controls {

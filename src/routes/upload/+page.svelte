@@ -1,21 +1,39 @@
 <script lang="ts">
     import { supabase } from "../../lib/supabaseClient";
     import imageCompression from "browser-image-compression";
-    import PhaserGame from "../../PhaserGame.svelte";
-    import { EventBus } from '../game/EventBus';
+    import PhaserGame, { type TPhaserRef } from "../../PhaserGame.svelte";
+    import { EventBus } from '../../game/EventBus';
+    import type { Scene } from "phaser";
 
-    let files: FileList | null = null;
-    let uploading = false;
-    let success = false;
-    let previewUrl: string | null = null;
-    let uploadProgress = "";
+    let phaserRef = $state<TPhaserRef>({ game: null, scene: null });
+    let currentSceneName = $state("Boot");
+
+    let files = $state<FileList | null>(null);
+    let uploading = $state(false);
+    let success = $state(false);
+    let previewUrl = $state<string | null>(null);
+    let uploadProgress = $state("");
+
+    const currentScene = (scene: Scene) => {
+        currentSceneName = scene.scene.key;
+    };
     
-    function moveLeft(){
-        EventBus.emit('mobile-move', -300);
-    }
-    function stopMove(){
-        EventBus.emit('mobile-move', 0);
-    }
+    const moveLeft = (e: Event) => {
+        e.preventDefault();
+        EventBus.emit('mobile-move-left');
+    };
+    const moveRight = (e: Event) => {
+        e.preventDefault();
+        EventBus.emit('mobile-move-right');
+    };
+    const stopMove = (e: Event) => {
+        e.preventDefault();
+        EventBus.emit('mobile-stop');
+    };
+    const jump = (e: Event) => {
+        e.preventDefault();
+        EventBus.emit('mobile-jump');
+    };
 
     function handleFileChange(e: Event) {
         const target = e.target as HTMLInputElement;
@@ -137,11 +155,11 @@
 </svelte:head>
 <div id="app">
 <PhaserGame 
-bind:phaserRef
+bind:phaserRef={phaserRef}
 currentActiveScene={currentScene}/>
-<div class="mobile.controls">
-    <button class="left-control" on:on:touchstart={() => moveLeft()} on:on:touchend={() => stopMove()}>Vänster</button>
-    <button class="right-control" on:on:touchstart={() => moveLeft()} on:on:touchend={() => stopMove()}>Höger</button>
+<div class="mobile-controls">
+    <button class="ctrl-btn left" ontouchstart={moveLeft} ontouchend={stopMove} onmousedown={moveLeft} onmouseup={stopMove} aria-label="Vänster"></button>
+    <button class="ctrl-btn right" ontouchstart={moveRight} ontouchend={stopMove} onmousedown={moveRight} onmouseup={stopMove} aria-label="Höger"></button>
 </div>
 
 </div>
@@ -163,7 +181,7 @@ currentActiveScene={currentScene}/>
                     accept="image/*"
                     capture="environment"
                     id="camera-input"
-                    on:change={handleFileChange}
+                    onchange={handleFileChange}
                     style="display: none;"
                 />
 
@@ -173,18 +191,18 @@ currentActiveScene={currentScene}/>
                     accept="image/*"
                     id="gallery-input"
                     style="display: none;"
-                    on:change={handleFileChange}
+                    onchange={handleFileChange}
                 />
 
                 <!-- <label class="file-label">
-                    <input type="file" accept="image/*" on:change={handleFileChange} capture="environment" />
+                    <input type="file" accept="image/*" onchange={handleFileChange} capture="environment" />
                     <span>{previewUrl ? 'VÄLJ EN ANNAN BILD' : 'TA ETT KORT / VÄLJ BILD'}</span>
                 </label> -->
 
                 {#if files}
                     <button
                         class="upload-btn"
-                        on:click={uploadImage}
+                        onclick={uploadImage}
                         disabled={uploading}
                     >
                         <span class="icon">{@html iconSend} </span>
@@ -194,19 +212,19 @@ currentActiveScene={currentScene}/>
                 <div class="button-grid">
                     <button
                         class="action-btn camera-btn"
-                        on:click={() =>
+                        onclick={() =>
                             document.getElementById("camera-input")?.click()}
                     >
                         <span class="icon">{@html iconCamera} </span> Ta Ett Kort
                     </button>
                     <button
                         class="action-btn gallery-btn"
-                        on:click={() =>
+                        onclick={() =>
                             document.getElementById("gallery-input")?.click()}
                     >
                         <span class="icon">{@html iconGallery}</span> Välj Från galleriet
                     </button>
-                    <button class="action-btn back-btn" on:click={homePage}>
+                    <button class="action-btn back-btn" onclick={homePage}>
                         <span class="icon">{@html iconBack}</span>
                         backa till menyn
                     </button>
@@ -222,7 +240,7 @@ currentActiveScene={currentScene}/>
                 </p>
                 <button
                     class="reset-btn"
-                    on:click={() => {
+                    onclick={() => {
                         success = false;
                         files = null;
                         previewUrl = null;
@@ -252,14 +270,6 @@ currentActiveScene={currentScene}/>
             justify-content: space-between;
             padding: 0 50px;
             pointer-events: auto; /* Se till att de går att klicka på */
-        }
-        
-        .right-control {
-            width: 80px;
-            height: 80px;
-            /* Här kan du styla knapparna med dina pilbilder som bakgrund */
-            background: url('/assets/arrow-left.png') no-repeat center;
-            background-size: contain;
         }
 
     .upload-page {
