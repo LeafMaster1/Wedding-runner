@@ -142,7 +142,11 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-        padding: 40px 50px;
+        /* Safe Area stöd för alla moderna telefoner */
+        padding: 40px 20px;
+        padding-bottom: calc(40px + env(safe-area-inset-bottom));
+        padding-left: calc(20px + env(safe-area-inset-left));
+        padding-right: calc(20px + env(safe-area-inset-right));
         pointer-events: none;
         z-index: 1000;
         box-sizing: border-box;
@@ -152,25 +156,26 @@
         pointer-events: auto;
         width: 85px;
         height: 85px;
-        background-color: rgba(255, 255, 255, 0.15);
-        border: 2px solid rgba(255, 255, 255, 0.3);
+        background-color: rgba(231, 18, 209, 0.2); /* Ljusrosa transparent bakgrund */
+        border: 3px solid #e712d1; /* Stark rosa kant */
         border-radius: 50%;
-        background-size: 100%;
+        background-size: 75%; /* Pilen är större inuti knappen */
         background-repeat: no-repeat;
         background-position: center;
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
+        box-shadow: 0 0 15px rgba(231, 18, 209, 0.4); /* Rosa glöd */
     }
 
     .ctrl-btn:active {
-        background-color: rgba(255, 255, 255, 0.4);
+        background-color: rgba(231, 18, 209, 0.6); /* Mörkare rosa vid tryck */
         transform: scale(0.9);
-        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 5px rgba(231, 18, 209, 0.8);
     }
 
     .left-controls {
         display: flex;
-        gap: 30px;
+        gap: 15px; /* Tätare gruppering för vänster/höger i stående läge */
     }
 
     .left { background-image: url('/assets/arrow-left.png'); }
@@ -179,13 +184,16 @@
         background-image: url('/assets/arrow-jump.png');
         width: 110px;
         height: 110px;
-        background-size: 50%;
+        background-size: 70%;
     }
 
     /* Anpassningar för Landscape */
     @media (orientation: landscape) {
         .mobile-ui {
-            padding: 20px 20px;
+            padding: 40px 10px;
+            padding-left: calc(20px + env(safe-area-inset-left));
+            padding-right: calc(  env(safe-area-inset-right));
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
             align-items: center; /* Centrera knapparna vertikalt i landscape */
         }
         
@@ -193,7 +201,6 @@
             flex-direction: column; /* Stapla pilarna ovanpå varandra */
             gap: 40px;
             justify-content: center;
-            
         }
 
         .right-controls {
