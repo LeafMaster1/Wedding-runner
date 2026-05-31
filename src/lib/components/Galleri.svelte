@@ -8,6 +8,7 @@
     let interval: any;
     let fetchInterval: any;
     let loading = true;
+    let touchStartX = 0;
     
     // @ts-ignore
      const localImages = Object.keys(import.meta.glob('/static/assets/gallery/*.{png,jpg,jpeg,webp}',
@@ -17,7 +18,6 @@
      async function loadImages() {
     loading = true;
     
-    // 1. Hämta listan från Supabase
     const { data, error } = await supabase
         .storage
         .from('wedding_images')
@@ -29,7 +29,6 @@
 
        let supabaseUrls: string[] = [];
        if (data) {
-           // Skapa URL:er för bilderna i Supabase
            supabaseUrls = data.map(file => {
                const { data: urlData } = supabase
                    .storage
@@ -39,10 +38,7 @@
            });
        }
 
-       // 2. HÄR ÄR ÄNDRINGEN: Kombinera listorna
-       // Vi lägger dina lokala bilder först, sen de från gästerna.
        images = [...localImages, ...supabaseUrls];
-       
        loading = false;
    }
 
@@ -55,7 +51,7 @@
         }, 5000);
         fetchInterval = setInterval(() => {
             loadImages();
-        }, 30000); // Uppdatera bilder varje 30 sekunder
+        }, 30000);
     });
 
     onDestroy(() => {
@@ -64,264 +60,238 @@
     });
 
     function nextImage() {
+        if (images.length === 0) return;
         currentIndex = (currentIndex + 1) % images.length;
     }
 
     function prevImage() {
+        if (images.length === 0) return;
         currentIndex = (currentIndex - 1 + images.length) % images.length;
+    }
+
+    function handleTouchStart(e: TouchEvent) {
+        touchStartX = e.touches[0].clientX;
+    }
+
+    function handleTouchEnd(e: TouchEvent) {
+        const touchEndX = e.changedTouches[0].clientX;
+        const diff = touchStartX - touchEndX;
+
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) nextImage();
+            else prevImage();
+        }
     }
 
     const uploadUrl =
         typeof window !== "undefined" ? `${window.location.origin}/upload` : "";
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(uploadUrl)}`;
 </script>
 
 <div class="gallery-overlay">
     <div class="gallery-card">
-        <h2>BILDGALLERI</h2>
+        <header>
+            <h2>BILDGALLERI</h2>
+            <button class="close-x" on:click={onClose}>✕</button>
+        </header>
 
-        <!-- <div class="slideshow-container"> -->
-        <div class="slideshow-cont">
+        <div 
+            class="slideshow-cont"
+            on:touchstart={handleTouchStart} 
+            on:touchend={handleTouchEnd}
+        >
             {#if loading}
-                <p>Laddar bilder...</p>
+                <div class="status-msg">Laddar bilder...</div>
             {:else if images.length > 0}
-                <!-- <div class="image-wrapper"> class="image-wrapper -->
-                    <div class="image-container">
+                <div class="image-container">
                     <img src={images[currentIndex]} alt="Wedding Galleri" />
                     <button class="nav-btn prev" on:click={prevImage}>❮</button>
                     <button class="nav-btn next" on:click={nextImage}>❯</button>
                 </div>
             {:else}
-                <p>Inga bilder än. Bli den första att ladda upp!</p>
+                <div class="status-msg">Inga bilder än. Bli den första att ladda upp!</div>
             {/if}
         </div>
 
-        <div class="upload-button-section">
-            <a href="/upload" class="upload-btn-action">LADDA UPP DIN BILD HÄR</a>
-        </div>
-
-        <!-- <div class="upload-section">
-            <p>Vill du synas här?</p>
-            <div class="qr-container">
-                <img src={qrCodeUrl} alt="QR Code för uppladdning" />
-            </div>
-            <a href="/upload" class="upload-btn-action">LADDA UPP DIN BILD HÄR</a>
-            <p class="upload-link">Eller dela på: {uploadUrl}</p>
-        </div> -->
-
-        <button class="back-btn" on:click={onClose}>TILLBAKA</button>
-
+        <footer class="gallery-footer">
+            <a href="/upload" class="upload-btn-action">LADDA UPP BILD</a>
+        </footer>
     </div>
 </div>
 
 <style>
-
-.slideshow-cont {
-    position: relative;
-    width: 100%;
-    min-height: 300px; /* Minsta höjd för att undvika för liten bildvisning */
-    height: 100%; /* Full höjd på kortet */
-    /* height: 450px; Högre bildvisning */
-    background: #000; /* Svart bakgrund för bilderna */
-    border-radius: 20px;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 4px solid var(--color-primary);
-}
-.image-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.upload-button-section {
-    margin: 1rem 0;
-    display: flex;
-    justify-content: center;
-}
-    /* Samma stilar som tidigare */
+    /* Grunddesign (Mobil först) */
     .gallery-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.9);
+        background: rgba(0, 0, 0, 0.95);
         display: flex;
         justify-content: center;
         align-items: center;
         z-index: 2000;
-        padding: env(safe-area-inset-top) 10px env(safe-area-inset-bottom);
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         box-sizing: border-box;
     }
 
     .gallery-card {
         background-color: #ccc;
-        /* background-color: var(--color-white); */
         color: black;
-        padding: 10px;
+        width: 100%;
+        height: 100%; /* Fyller hela skärmen på mobil */
         display: flex;
         flex-direction: column;
-        /* border-radius: 30px; */
-        width: 100%;
-        height: 100vh; /* Tar nästan hela höjden */
-        max-width: 1020px; /* Ännu bredare kort */
-        /* max-width: 800px; */
-        text-align: center;
-        box-shadow: 0 0 50px var(--color-primary);
-        display: flex;
-        flex-direction: column;
-        /* gap: 1.5rem; */
-    }
-
-    h2 {
-        font-size: clamp(1.5rem, 6vw, 2.2rem);
-        margin: 0;
-        color: var(--color-primary);
-        font-family: "Arial Black", sans-serif;
-        
-    
-    }
-
-    /* .slideshow-container {
-        position: relative;
-        width: 100%;
-        height: 450px; 
-        background: #000; 
-        border-radius: 20px;
         overflow: hidden;
+    }
+
+    header {
+        padding: 10px;
         display: flex;
         justify-content: center;
         align-items: center;
-        border: 4px solid var(--color-primary);
-    } */
-
-    /* .image-wrapper {
         position: relative;
+        flex-shrink: 0; /* Förhindra att headern krymper */
+    }
+
+    h2 {
+        font-size: clamp(1.2rem, 5vw, 2.2rem);
+        margin: 0;
+        color: var(--color-primary);
+        font-family: "Arial Black", sans-serif;
+    }
+
+    .close-x {
+        position: absolute;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: #666;
+        cursor: pointer;
+        padding: 5px 15px;
+    }
+
+    .slideshow-cont {
+        flex: 1; /* Tar upp all kvarvarande plats */
+        background: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        min-height: 0; /* Viktigt för flexbox-overflow */
+    }
+
+    .image-container {
         width: 100%;
         height: 100%;
-    } */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
 
     img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain; /* Behåll hela bilden synlig */
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .status-msg {
+        color: white;
+        font-size: 1.2rem;
     }
 
     .nav-btn {
         position: absolute;
         top: 0;
         bottom: 0;
-        width: 60px; /* Bredare klickyta */
-        background: rgba(0, 0, 0, 0.2); /* Väldigt diskret bakgrund */
-        color: white;
+        width: 20%; /* Stor osynlig (eller semitransparent) klickyta */
+        background: rgba(0,0,0,0.1); /* Diskret på mobil */
+        color: rgba(255,255,255,0.5);
         border: none;
-        cursor: pointer;
+        font-size: 2.5rem;
         display: flex;
-        justify-content: center;
         align-items: center;
-        font-size: 2rem;
-        transition: background 0.3s, opacity 0.3s;
-        opacity: 0.6;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.3s, color 0.3s;
         z-index: 10;
     }
-
     .nav-btn:hover {
-        background: rgba(0, 0, 0, 0.5);
-        opacity: 1;
+        background: rgba(0,0,0,0.4);
+        color: white;
     }
 
-    .prev {
-        left: 0;
-        border-radius: 0 15px 15px 0;
-    }
-    .next {
-        right: 0;
-        border-radius: 15px 0 0 15px;
-    }
+    .prev { left: 0; }
+    .next { right: 0; }
 
-    /* .upload-section {
-        background: #f9f9f9;
-        padding: 1rem;
-        border-radius: 15px;
-        border: 2px dashed #ccc;
+    .gallery-footer {
+        padding: 10px;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
+        justify-content: center;
+        flex-shrink: 0;
     }
-
-    .qr-container {
-        margin: 5px auto;
-        width: 100px;
-        height: 100px;
-        background: white;
-        padding: 5px;
-        border-radius: 10px;
-    }
-
-    .qr-container img {
-        width: 100%;
-        height: 100%;
-    } */
 
     .upload-btn-action {
         background-color: var(--color-primary);
         color: white;
-        padding: 1.2rem 2.5rem;
+        padding: 1rem 2rem;
         border-radius: 50px;
         text-decoration: none;
         font-weight: bold;
-        font-size: 1.2rem;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        font-size: 1.1rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         transition: transform 0.2s, background-color 0.2s;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
     }
-    .upload-btn-action:hover {
-        background-color: var(--color-white);
-        color: var(--color-primary);
-        border-color: var(--color-primary);
-        box-shadow: inset 0 0 0 2px var(--color-primary);
-        transform: translateY(-2px);
-    }
-
+    
     .upload-btn-action:active {
         transform: scale(0.95);
     }
 
-    /* .upload-link {
-        font-size: 0.6rem;
-        color: #666;
-        margin: 0;
-    } */
-
-    .back-btn {
-        padding: 1rem;
-        background: var(--color-primary);
-        color: var(--color-white);
-        border: 2px solid var(--color-white);
-        border-radius: 50px;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 1.2rem;
-    }
-    .back-btn:hover {
-        background: var(--color-white);
-        color: var(--color-primary);
-        border-color: var(--color-primary);
-        box-shadow: inset 0 0 0 2px var(--color-primary);
+    /* Anpassning för liggande mobil (Landscape) */
+    @media (orientation: landscape) and (max-height: 500px) {
+        header {
+            padding: 5px;
+        }
+        h2 {
+            font-size: 1.2rem;
+        }
+        .gallery-footer {
+            padding: 5px;
+        }
+        .upload-btn-action {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+        .close-x {
+            font-size: 1.5rem;
+            padding: 2px 10px;
+        }
     }
 
-    @media (max-width: 768px) {
-
+    /* Anpassning för Dator/Större skärmar */
+    @media (min-width: 768px) {
         .gallery-card {
-            height: 90vh; 
+            height: 90vh;
             max-width: 1020px;
-            border-radius: 30px;
-            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 0 50px var(--color-primary);
+        }
+        
+        header {
+            padding: 20px;
+        }
+        
+        .gallery-footer {
+            padding: 20px;
+        }
+        
+        .nav-btn {
+            width: 80px;
         }
     }
 </style>

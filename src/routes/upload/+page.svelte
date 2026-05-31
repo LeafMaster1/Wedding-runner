@@ -452,4 +452,34 @@
     .action-btn:hover :global(svg) {
         stroke: #e712d1;
     }
+    @media (min-width: 500px) {
+        .button-grid {
+            flex-direction: row;
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+     /* Anpassning för liggande mobil (Landscape) */
+     @media (orientation: landscape) and (max-height: 500px) {
+        .card {
+            padding: 1rem;
+            width: 90%;
+        }
+        h1 {
+            font-size: 1.5rem;
+        }
+        .subtitle {
+            font-size: 0.9rem;
+        }
+        .preview {
+            height: 120px;
+        }
+        .action-btn,
+        .upload-btn,
+        .reset-btn,
+        .back-btn {
+            padding: 0.8rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
 </style>
