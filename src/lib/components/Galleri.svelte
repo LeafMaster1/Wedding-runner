@@ -145,7 +145,7 @@
 }
     /* Samma stilar som tidigare */
     .gallery-overlay {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
@@ -154,8 +154,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        z-index: 1000;
-        padding: 20px;
+        z-index: 2000;
+        padding: env(safe-area-inset-top) 10px env(safe-area-inset-bottom);
         box-sizing: border-box;
     }
 
@@ -163,10 +163,12 @@
         background-color: #ccc;
         /* background-color: var(--color-white); */
         color: black;
-        padding: 2rem;
-        border-radius: 30px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        /* border-radius: 30px; */
         width: 100%;
-        height: 90vh; /* Tar nästan hela höjden */
+        height: 100vh; /* Tar nästan hela höjden */
         max-width: 1020px; /* Ännu bredare kort */
         /* max-width: 800px; */
         text-align: center;
@@ -177,10 +179,12 @@
     }
 
     h2 {
-        font-size: 2.5rem;
+        font-size: clamp(1.5rem, 6vw, 2.2rem);
         margin: 0;
         color: var(--color-primary);
         font-family: "Arial Black", sans-serif;
+        
+    
     }
 
     /* .slideshow-container {
@@ -309,5 +313,15 @@
         color: var(--color-primary);
         border-color: var(--color-primary);
         box-shadow: inset 0 0 0 2px var(--color-primary);
+    }
+
+    @media (max-width: 768px) {
+
+        .gallery-card {
+            height: 90vh; 
+            max-width: 1020px;
+            border-radius: 30px;
+            padding: 2rem;
+        }
     }
 </style>
