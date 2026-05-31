@@ -1,12 +1,7 @@
 <script lang="ts">
     import { supabase } from "../../lib/supabaseClient";
     import imageCompression from "browser-image-compression";
-    import PhaserGame, { type TPhaserRef } from "../../PhaserGame.svelte";
-    import { EventBus } from '../../game/EventBus';
-    import type { Scene } from "phaser";
-
-    let phaserRef = $state<TPhaserRef>({ game: null, scene: null });
-    let currentSceneName = $state("Boot");
+    
 
     let files = $state<FileList | null>(null);
     let uploading = $state(false);
@@ -14,26 +9,7 @@
     let previewUrl = $state<string | null>(null);
     let uploadProgress = $state("");
 
-    const currentScene = (scene: Scene) => {
-        currentSceneName = scene.scene.key;
-    };
     
-    const moveLeft = (e: Event) => {
-        e.preventDefault();
-        EventBus.emit('mobile-move-left');
-    };
-    const moveRight = (e: Event) => {
-        e.preventDefault();
-        EventBus.emit('mobile-move-right');
-    };
-    const stopMove = (e: Event) => {
-        e.preventDefault();
-        EventBus.emit('mobile-stop');
-    };
-    const jump = (e: Event) => {
-        e.preventDefault();
-        EventBus.emit('mobile-jump');
-    };
 
     function handleFileChange(e: Event) {
         const target = e.target as HTMLInputElement;
@@ -153,16 +129,7 @@
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
     />
 </svelte:head>
-<div id="app">
-<PhaserGame 
-bind:phaserRef={phaserRef}
-currentActiveScene={currentScene}/>
-<div class="mobile-controls">
-    <button class="ctrl-btn left" ontouchstart={moveLeft} ontouchend={stopMove} onmousedown={moveLeft} onmouseup={stopMove} aria-label="Vänster"></button>
-    <button class="ctrl-btn right" ontouchstart={moveRight} ontouchend={stopMove} onmousedown={moveRight} onmouseup={stopMove} aria-label="Höger"></button>
-</div>
 
-</div>
 <div class="upload-page">
     <div class="card">
         <h1>BILDUPPLADDNING</h1>
