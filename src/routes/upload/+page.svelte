@@ -272,28 +272,29 @@
         z-index: 10; /* Se till att kortet är ovanför bakgrunden */
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
-        padding: 2rem;
+        padding: clamp(1rem, 3vh, 2rem);
         border-radius: 25px;
         width: 100%;
         max-width: 400px;
+        max-height: 90vh; /* Hindrar kortet från att bli högre än skärmen */
+        display: flex;
+        flex-direction: column;
         text-align: center;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
         background-image: url("/assets/paret-wedding.png");
         background-size: auto 100%;
         background-position: center;
-        /* background-repeat: no-repeat; */
-
-        /* background: rgba(255, 255, 255, 0.1) url('/assets/paret-wedding.png');  */
+        overflow-y: auto;
     }
     h1 {
         color: #e712d1;
-        font-size: 2rem;
+        font-size: clamp(1.5rem, 5vh, 2.2rem);
         margin-bottom: 0.5rem;
     }
 
     .subtitle {
         color: black;
-        margin-bottom: 2rem;
+        margin-bottom: clamp(1rem, 3vh, 2rem);
     }
 
     .upload-area {
