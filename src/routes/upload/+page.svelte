@@ -1,6 +1,6 @@
 <script lang="ts">
     import { supabase } from "../../lib/supabaseClient";
-    import imageCompression from "browser-image-compression";
+    import { registerUploadedImage } from "$lib/imageStore";
     
 
     let files = $state<FileList | null>(null);
@@ -24,78 +24,42 @@
     }
 
     async function uploadImage() {
-        // TEST 1: Kollar om funktionen ens startar
         console.log("--- UPPLADDNING STARTAD ---");
         if (!files || files.length === 0) {
-            // test för att kolla om den får någon fil att ladda upp
-            console.log("Fek: ingen fil hittades i (files) variabeln");
+            console.log("Fel: ingen fil hittades");
             return;
         }
 
         uploading = true;
-        uploadProgress = "Komprimerar bild...";
+        uploadProgress = "Förbereder uppladdning...";
 
         try {
             const file = files[0];
-
-            // logg för test !!!!!!!!!  för att kolla orginalstorlek på bilden
-            console.log(
-                `Orginalstorlek:${[(file.size / 1024 / 1024).toFixed(2)]}MB`,
-            );
-
-            // Inställningar för komprimering
-            const options = {
-                maxSizeMB: 3, // Max 1MB per bild (räcker gott för skärmar)
-                maxWidthOrHeight: 3000, // Max Full-HD upplösning
-                useWebWorker: true,
-                fileType: "image/jpeg",
-            };
-
-            // startar kompremering
-            console.log("Startar komprimering...");
-            const compressedFile = await imageCompression(file, options);
-            // komprimering klar!
-            console.log("Komprimering klar!", compressedFile);
-
-            // LOGG för att kolla filstorlek efter komprimering
-            console.log(
-                `Komprimerad storlek: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`,
-            );
-            console.log(
-                `Efter: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`,
-            );
+            console.log(`Filstorlek: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
 
             uploadProgress = "Laddar upp...";
             const fileName = `${Math.random().toString(36).slice(2)}.jpg`;
-            // const fileExt = file.name.split('.').pop();
-            // const fileName = `${Math.random().toString(36).slice(2)}.${fileExt}`;
-            // const filePath = `${fileName}`;
 
+            // Ladda upp originalfilen direkt till Storage
             const { error: uploadError } = await supabase.storage
                 .from("wedding_images")
-                .upload(fileName, compressedFile, {
-                    contentType: "image/jpeg", // Berätta för Supabase att det är en JPG
+                .upload(fileName, file, {
+                    contentType: file.type || "image/jpeg",
                     upsert: false,
                 });
 
             if (uploadError) {
-                // logg för att kolla om supabase nekar uppladdning
-                console.error("Supabase Error:", uploadError);
+                console.error("Supabase Storage Error:", uploadError);
                 throw uploadError;
             }
-            /// logg för att kolla om uppladdning lyckades
 
-            console.log("uppladdning lyckades!!");
+            // Registrera bilden i databastabellen
+            await registerUploadedImage(fileName);
+
+            console.log("Uppladdning och registrering lyckades!!");
             success = true;
         } catch (error: any) {
-            // Om felet kommer från RLS-policyn (t.ex. för stor fil)
-            if (error.message?.includes("policy")) {
-                alert(
-                    "Bilden är tyvärr för stor eller har fel format, även efter komprimering.",
-                );
-            } else {
-                alert("Gick inte att ladda upp bilden. Försök igen!");
-            }
+            alert("Gick inte att ladda upp bilden. Försök igen!");
             console.error(error);
         } finally {
             uploading = false;
