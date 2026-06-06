@@ -1,56 +1,26 @@
 <script lang="ts">
     import { onMount, onDestroy } from "svelte";
-    import { supabase } from '../supabaseClient';
+    import { images as imageStore, fetchImages, loadingImages } from '$lib/imageStore';
     export let onClose: () => void;
 
-    let images: string[] = [];
     let currentIndex = 0;
     let interval: any;
     let fetchInterval: any;
-    let loading = true;
     let touchStartX = 0;
-    
-    // @ts-ignore
-     const localImages = Object.keys(import.meta.glob('/static/assets/gallery/*.{png,jpg,jpeg,webp}',
-     { eager: true }))
-    .map((path) => path.replace('/static', ''));
 
-     async function loadImages() {
-    loading = true;
-    
-    const { data, error } = await supabase
-        .storage
-        .from('wedding_images')
-        .list('', {
-            limit: 100,
-               offset: 0,
-               sortBy: { column: 'created_at', order: 'desc' },
-           });
-
-       let supabaseUrls: string[] = [];
-       if (data) {
-           supabaseUrls = data.map(file => {
-               const { data: urlData } = supabase
-                   .storage
-                   .from('wedding_images')
-                   .getPublicUrl(file.name);
-               return urlData.publicUrl;
-           });
-       }
-
-       images = [...localImages, ...supabaseUrls];
-       loading = false;
-   }
+    // Prenumerera på store
+    $: images = $imageStore;
+    $: loading = $loadingImages;
 
     onMount(() => {
-        loadImages();
+        fetchImages();
         interval = setInterval(() => {
             if (images.length > 0) {
                 currentIndex = (currentIndex + 1) % images.length;
             }
         }, 5000);
         fetchInterval = setInterval(() => {
-            loadImages();
+            fetchImages();
         }, 30000);
     });
 
