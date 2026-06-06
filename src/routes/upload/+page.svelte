@@ -1,12 +1,15 @@
 <script lang="ts">
     import { supabase } from "../../lib/supabaseClient";
     import imageCompression from "browser-image-compression";
+    
 
-    let files: FileList | null = null;
-    let uploading = false;
-    let success = false;
-    let previewUrl: string | null = null;
-    let uploadProgress = "";
+    let files = $state<FileList | null>(null);
+    let uploading = $state(false);
+    let success = $state(false);
+    let previewUrl = $state<string | null>(null);
+    let uploadProgress = $state("");
+
+    
 
     function handleFileChange(e: Event) {
         const target = e.target as HTMLInputElement;
@@ -145,7 +148,7 @@
                     accept="image/*"
                     capture="environment"
                     id="camera-input"
-                    on:change={handleFileChange}
+                    onchange={handleFileChange}
                     style="display: none;"
                 />
 
@@ -155,18 +158,18 @@
                     accept="image/*"
                     id="gallery-input"
                     style="display: none;"
-                    on:change={handleFileChange}
+                    onchange={handleFileChange}
                 />
 
                 <!-- <label class="file-label">
-                    <input type="file" accept="image/*" on:change={handleFileChange} capture="environment" />
+                    <input type="file" accept="image/*" onchange={handleFileChange} capture="environment" />
                     <span>{previewUrl ? 'VÄLJ EN ANNAN BILD' : 'TA ETT KORT / VÄLJ BILD'}</span>
                 </label> -->
 
                 {#if files}
                     <button
                         class="upload-btn"
-                        on:click={uploadImage}
+                        onclick={uploadImage}
                         disabled={uploading}
                     >
                         <span class="icon">{@html iconSend} </span>
@@ -176,19 +179,19 @@
                 <div class="button-grid">
                     <button
                         class="action-btn camera-btn"
-                        on:click={() =>
+                        onclick={() =>
                             document.getElementById("camera-input")?.click()}
                     >
                         <span class="icon">{@html iconCamera} </span> Ta Ett Kort
                     </button>
                     <button
                         class="action-btn gallery-btn"
-                        on:click={() =>
+                        onclick={() =>
                             document.getElementById("gallery-input")?.click()}
                     >
                         <span class="icon">{@html iconGallery}</span> Välj Från galleriet
                     </button>
-                    <button class="action-btn back-btn" on:click={homePage}>
+                    <button class="action-btn back-btn" onclick={homePage}>
                         <span class="icon">{@html iconBack}</span>
                         backa till menyn
                     </button>
@@ -204,7 +207,7 @@
                 </p>
                 <button
                     class="reset-btn"
-                    on:click={() => {
+                    onclick={() => {
                         success = false;
                         files = null;
                         previewUrl = null;
@@ -226,6 +229,15 @@
         background-color: #f0f0f0;
         font-family: sans-serif;
     }
+    .mobile-controls {
+            position: absolute;
+            bottom: 20px; /* Hamnar i det svarta området längst ner */
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 50px;
+            pointer-events: auto; /* Se till att de går att klicka på */
+        }
 
     .upload-page {
         display: flex;
@@ -260,28 +272,29 @@
         z-index: 10; /* Se till att kortet är ovanför bakgrunden */
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
-        padding: 2rem;
+        padding: clamp(1rem, 3vh, 2rem);
         border-radius: 25px;
         width: 100%;
         max-width: 400px;
+        max-height: 90vh; /* Hindrar kortet från att bli högre än skärmen */
+        display: flex;
+        flex-direction: column;
         text-align: center;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
         background-image: url("/assets/paret-wedding.png");
         background-size: auto 100%;
         background-position: center;
-        /* background-repeat: no-repeat; */
-
-        /* background: rgba(255, 255, 255, 0.1) url('/assets/paret-wedding.png');  */
+        overflow-y: auto;
     }
     h1 {
         color: #e712d1;
-        font-size: 2rem;
+        font-size: clamp(1.5rem, 5vh, 2.2rem);
         margin-bottom: 0.5rem;
     }
 
     .subtitle {
         color: black;
-        margin-bottom: 2rem;
+        margin-bottom: clamp(1rem, 3vh, 2rem);
     }
 
     .upload-area {
@@ -439,5 +452,35 @@
     }
     .action-btn:hover :global(svg) {
         stroke: #e712d1;
+    }
+    @media (min-width: 500px) {
+        .button-grid {
+            flex-direction: row;
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+     /* Anpassning för liggande mobil (Landscape) */
+     @media (orientation: landscape) and (max-height: 500px) {
+        .card {
+            padding: 1rem;
+            width: 90%;
+        }
+        h1 {
+            font-size: 1.5rem;
+        }
+        .subtitle {
+            font-size: 0.9rem;
+        }
+        .preview {
+            height: 120px;
+        }
+        .action-btn,
+        .upload-btn,
+        .reset-btn,
+        .back-btn {
+            padding: 0.8rem 1rem;
+            font-size: 0.9rem;
+        }
     }
 </style>

@@ -35,6 +35,12 @@ export class Game extends Scene {
         this.background.setDisplaySize(1024, 768);
         this.background.setAlpha(0.5);
 
+        // mobilknappar utanför Phaser
+        EventBus.on('mobile-move', (speed:number) => {
+            this.player.setVelocityX(speed);
+            this.player.setData("isMovingMobile", speed !== 0);
+        });
+
         // 1. Mark (Flyttad upp till 600 för att ge plats åt footern)
         const groundY = 600;
         const ground = this.add.rectangle(512, groundY, 1024, 20, 0x00ff00, 0);
@@ -168,7 +174,35 @@ export class Game extends Scene {
         // });
 
         // 7. Mobilkontroller
-        this.setupControls();
+        this.player.setData("isMovingMobile", false);
+        EventBus.on("mobile-move-left", () => {
+            this.player.setData("isMovingMobile", true);
+            this.player.setVelocityX(-300);
+        });
+        EventBus.on("mobile-move-right", () => {
+            this.player.setData("isMovingMobile", true);
+            this.player.setVelocityX(300);
+        });
+        EventBus.on("mobile-stop", () => {
+            this.player.setData("isMovingMobile", false);
+            this.player.setVelocityX(0);
+        });
+        EventBus.on("mobile-jump", () => {
+            if (this.player.body!.touching.down) {
+                const jumpPower = this.player.getData("isHighJumper")
+                    ? -900
+                    : -600;
+                this.player.setVelocityY(jumpPower);
+            }
+        });
+
+        // Släpp upp lyssnare när scenen stängs ner
+        this.events.on("shutdown", () => {
+            EventBus.off("mobile-move-left");
+            EventBus.off("mobile-move-right");
+            EventBus.off("mobile-stop");
+            EventBus.off("mobile-jump");
+        });
 
         // this.enemy = this.physics.add.sprite(800, groundY - 100, 'enemy');
         // this.enemy.setCollideWorldBounds(true);
