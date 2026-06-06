@@ -18,23 +18,51 @@ export const fetchHighScores = async () => {
         const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
         if (localData) {
             const parsedData: ScoreEntry[] = JSON.parse(localData);
-            highscores.set(parsedData.sort((a, b) => b.score - a.score).slice(0, 10));
+            // Sortera först efter högsta poäng
+            const sorted = parsedData.sort((a, b) => b.score - a.score);
+            
+            // Filtrera så varje namn bara visas en gång
+            const uniqueScores: ScoreEntry[] = [];
+            const seenNames = new Set();
+            
+            for (const entry of sorted) {
+                if (!seenNames.has(entry.name)) {
+                    uniqueScores.push(entry);
+                    seenNames.add(entry.name);
+                }
+                if (uniqueScores.length === 10) break;
+            }
+            
+            highscores.set(uniqueScores);
         } else {
             highscores.set([]);
         }
         return;
     }
 
+    // Vi hämtar de 100 bästa raderna för att vara säkra på att vi hittar 10 unika personer
     const { data, error } = await supabase
         .from('highscores')
         .select('name, score, created_at')
         .order('score', { ascending: false })
-        .limit(10);
+        .limit(100);
 
     if (error) {
         console.error('Error fetching highscores:', error);
     } else if (data) {
-        highscores.set(data);
+        // Filtrera bort dubbletter (behåll bara bästa poängen per person)
+        const uniqueData: ScoreEntry[] = [];
+        const seenNames = new Set();
+        
+        for (const entry of data) {
+            if (!seenNames.has(entry.name)) {
+                uniqueData.push(entry);
+                seenNames.add(entry.name);
+            }
+            if (uniqueData.length === 10) break; // Vi vill bara ha topp 10 unika
+        }
+        
+        highscores.set(uniqueData);
     }
 };
 
