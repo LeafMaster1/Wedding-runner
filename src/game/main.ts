@@ -19,13 +19,13 @@ const config: Phaser.Types.Core.GameConfig = {
         autoCenter: Scale.CENTER_BOTH, 
         // Centrerar spelet
         width: 1024,
-        height: 768
+        height: 768 
     },
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 1100, x: 0 },
-            debug: false // ska ändra till false innan release OBS!!!!!!!!
+            gravity: { y: 1200, x: 0 }, // 1100 orginal
+            debug: false 
             
         }
     },
