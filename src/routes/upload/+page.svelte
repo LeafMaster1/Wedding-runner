@@ -1,6 +1,7 @@
 <script lang="ts">
     import { supabase } from "../../lib/supabaseClient";
     import { registerUploadedImage } from "$lib/imageStore";
+    import imageCompression from 'browser-image-compression';
     
 
     let files = $state<FileList | null>(null);
@@ -31,20 +32,57 @@
         }
 
         uploading = true;
-        uploadProgress = "Förbereder uppladdning...";
+        uploadProgress = "Bearbetar bild...";
 
         try {
             const file = files[0];
-            console.log(`Filstorlek: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+            let fileToUpload = file;
+            let extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+            
+            console.log(`Originalfil: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB), Typ: ${file.type}`);
+
+            // HEIC/HEIF (iPhone) måste konverteras för att kunna visas i webbläsaren
+            const isHeic = file.type === 'image/heic' || file.type === 'image/heif' || extension === 'heic' || extension === 'heif';
+
+            if (isHeic) {
+                uploadProgress = "Konverterar iPhone-bild (HEIC)...";
+                console.log("Konverterar HEIC till JPG för kompatibilitet...");
+                
+                // Om filtypen är tom (vanligt på Windows), tvinga den till image/heic så att komprimeraren godkänner den
+                const processFile = (file.type === '') 
+                    ? new File([file], file.name, { type: 'image/heic' }) 
+                    : file;
+
+                const options = {
+                    maxSizeMB: 20,           
+                    maxWidthOrHeight: 16000, 
+                    useWebWorker: true,
+                    fileType: 'image/jpeg',
+                    initialQuality: 1        
+                };
+                
+                try {
+                    fileToUpload = await imageCompression(processFile, options);
+                    extension = 'jpg';
+                    console.log(`Konvertering klar. Ny storlek: ${(fileToUpload.size / 1024 / 1024).toFixed(2)} MB`);
+                } catch (compressionError) {
+                    console.error("Kunde inte konvertera HEIC lokalt:", compressionError);
+                    // Om det misslyckas (t.ex. på en webbläsare som inte alls fattar HEIC), 
+                    // så försöker vi ladda upp originalet ändå, men varnar
+                    uploadProgress = "Laddar upp original (konvertering misslyckades)...";
+                }
+            } else {
+                console.log("Använder originalfilen (ingen komprimering).");
+            }
 
             uploadProgress = "Laddar upp...";
-            const fileName = `${Math.random().toString(36).slice(2)}.jpg`;
+            const fileName = `${Math.random().toString(36).slice(2)}.${extension}`;
 
-            // Ladda upp originalfilen direkt till Storage
+            // Ladda upp filen (original eller konverterad HEIC)
             const { error: uploadError } = await supabase.storage
                 .from("wedding_images")
-                .upload(fileName, file, {
-                    contentType: file.type || "image/jpeg",
+                .upload(fileName, fileToUpload, {
+                    contentType: fileToUpload.type || 'image/jpeg',
                     upsert: false,
                 });
 
@@ -56,7 +94,7 @@
             // Registrera bilden i databastabellen
             await registerUploadedImage(fileName);
 
-            console.log("Uppladdning och registrering lyckades!!");
+            console.log("Uppladdning lyckades!");
             success = true;
         } catch (error: any) {
             alert("Gick inte att ladda upp bilden. Försök igen!");
@@ -66,6 +104,7 @@
             uploadProgress = "";
         }
     }
+
     const iconCamera = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0
      0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
      stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0
@@ -125,11 +164,6 @@
                     onchange={handleFileChange}
                 />
 
-                <!-- <label class="file-label">
-                    <input type="file" accept="image/*" onchange={handleFileChange} capture="environment" />
-                    <span>{previewUrl ? 'VÄLJ EN ANNAN BILD' : 'TA ETT KORT / VÄLJ BILD'}</span>
-                </label> -->
-
                 {#if files}
                     <button
                         class="upload-btn"
@@ -186,40 +220,26 @@
 
 <style>
     :global(body) {
-        overflow-y: auto !important;
-        position: static !important;
         margin: 0;
         padding: 0;
         background-color: #f0f0f0;
         font-family: sans-serif;
     }
-    .mobile-controls {
-            position: absolute;
-            bottom: 20px; /* Hamnar i det svarta området längst ner */
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 50px;
-            pointer-events: auto; /* Se till att de går att klicka på */
-        }
 
     .upload-page {
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        height: auto;
-        padding: 40px 20px;
+        padding: 20px;
         box-sizing: border-box;
-
-        /* BAKGRUNDSBILDEN */
-        background-image: url("/assets/background.png"); /* Eller background.png */
+        background-image: url("/assets/background.png");
         background-size: cover;
         background-position: center;
-        background-attachment: fixed; /* Gör att bakgrunden inte scrollar på mobilen */
+        background-attachment: fixed;
         position: relative;
-        /* background: linear-gradient(135deg, #ff7eb3 0%, #ff758c 100%); */
     }
+
     .upload-page::before {
         content: "";
         position: absolute;
@@ -227,20 +247,19 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.3); /* Mörk överlägg för bättre kontrast */
+        background: rgba(0, 0, 0, 0.3);
         z-index: 1;
     }
 
     .card {
         position: relative;
-        z-index: 10; /* Se till att kortet är ovanför bakgrunden */
+        z-index: 10;
         background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        padding: clamp(1rem, 3vh, 2rem);
+        padding: 1.5rem;
         border-radius: 25px;
         width: 100%;
         max-width: 400px;
-        max-height: 90vh; /* Hindrar kortet från att bli högre än skärmen */
+        max-height: 90vh;
         display: flex;
         flex-direction: column;
         text-align: center;
@@ -250,6 +269,7 @@
         background-position: center;
         overflow-y: auto;
     }
+
     h1 {
         color: #e712d1;
         font-size: clamp(1.5rem, 5vh, 2.2rem);
@@ -258,7 +278,7 @@
 
     .subtitle {
         color: black;
-        margin-bottom: clamp(1rem, 3vh, 2rem);
+        margin-bottom: 2rem;
     }
 
     .upload-area {
@@ -270,9 +290,7 @@
     .preview {
         width: 100%;
         height: 150px;
-        /* 200px tidigare */
         border-radius: 10px;
-        object-fit: cover;
         overflow: hidden;
         margin-bottom: 10px;
         background: #eee;
@@ -284,73 +302,6 @@
         object-fit: cover;
     }
 
-    /* .file-label {
-        background: #eee;
-        padding: 1rem;
-        border-radius: 10px;
-        border: 2px dashed #ccc;
-        cursor: pointer;
-        display: block;
-        font-weight: bold;
-        color: #555;
-    } */
-
-    /* .file-label input {
-        display: none;
-    } */
-
-    .upload-btn:disabled {
-        background: #ccc;
-        cursor: not-allowed;
-    }
-
-    .success-msg {
-        padding: 2rem 0;
-    }
-
-    .icon, p , h2 {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-        color: #e712d1;
-        /* width: 24px;
-        height: 24px; */
-    }
-
-    /* .reset-btn {
-        margin-top: 1.5rem;
-        background: none;
-        border: 2px solid #e712d1;
-        color: #e712d1;
-        padding: 0.8rem 1.5rem;
-        border-radius: 50px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-    .button-grid {
-        display: flex;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    .action-btn {
-      padding: 1.2rem;
-      border-radius: 15px;
-      border: 2px solid #e712d1;
-      background: white;
-      color: #e712d1;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .action-btn:active {
-        transform: scale(0.95);
-        background: var(--e712d1);
-        color: white;
-    } */
-    /* Knapp-behållaren */
     .button-grid {
         display: flex;
         flex-direction: column;
@@ -358,93 +309,64 @@
         width: 100%;
         margin-top: 1rem;
     }
-    /* Den gemensamma stilen för ALLA knappar på sidan */
+
     .action-btn,
     .upload-btn,
     .reset-btn,
     .back-btn {
         padding: 1.2rem 1.5rem;
-        font-size: clamp(
-            1.1rem,
-            5vw,
-            1.5rem
-        ); /* Något mindre text för att få plats */
+        font-size: clamp(1.1rem, 5vw, 1.5rem);
         font-weight: bold;
-        border: 2px solid white; /* Eller var(--color-white) om den är tillgänglig */
+        border: 2px solid white;
         border-radius: 50px;
         cursor: pointer;
-        transition:
-            transform 0.2s,
-            background 0.2s;
+        transition: transform 0.2s, background 0.2s;
         width: 100%;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0);
-        background: rgba(
-            231,
-            18,
-            209,
-            0.3
-        ); /* Din rosa färg (var--color-primary) */
+        background: rgba(231, 18, 209, 0.3);
         color: white;
         text-transform: uppercase;
         letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
     }
-    /* Hover-effekt (samma som menyn) */
+
     .action-btn:hover,
-    .upload-btn:hover:not(:disabled),
-    .reset-btn:hover {
+    .upload-btn:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.3);
         color: #e712d1;
         border: 2px solid #e712d1;
     }
-    /* Tryck-effekt */
+
     .action-btn:active,
-    .upload-btn:active:not(:disabled),
-    .reset-btn:active {
+    .upload-btn:active:not(:disabled) {
         transform: scale(0.95);
     }
-    /* Grå färg om knappen är avstängd */
+
     .upload-btn:disabled {
         background: #ccc;
         border-color: #999;
         cursor: not-allowed;
-        box-shadow: none;
     }
 
-    .action-btn :global(svg) {
-        stroke: white;
-        transition: stroke 0.2s;
+    .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-    .action-btn:hover :global(svg) {
-        stroke: #e712d1;
-    }
+
     @media (min-width: 500px) {
         .button-grid {
-            flex-direction: row;
-            grid-template-columns: repeat(3, 1fr);
+            flex-direction: column; /* Behåll mobil-känsla även på desktop */
+            align-items: center;
         }
     }
 
-     /* Anpassning för liggande mobil (Landscape) */
-     @media (orientation: landscape) and (max-height: 500px) {
-        .card {
-            padding: 1rem;
-            width: 90%;
-        }
-        h1 {
-            font-size: 1.5rem;
-        }
-        .subtitle {
-            font-size: 0.9rem;
-        }
-        .preview {
-            height: 120px;
-        }
-        .action-btn,
-        .upload-btn,
-        .reset-btn,
-        .back-btn {
-            padding: 0.8rem 1rem;
-            font-size: 0.9rem;
-        }
+    @media (orientation: landscape) and (max-height: 500px) {
+        .card { padding: 1rem; }
+        h1 { font-size: 1.5rem; }
+        .preview { height: 120px; }
+        .action-btn, .upload-btn, .back-btn { padding: 0.8rem 1rem; font-size: 0.9rem; }
     }
 </style>

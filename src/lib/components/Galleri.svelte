@@ -73,7 +73,22 @@
                 <div class="status-msg">Laddar bilder...</div>
             {:else if images.length > 0}
                 <div class="image-container">
-                    <img src={images[currentIndex]} alt="Wedding Galleri" />
+                    <img 
+                        src={images[currentIndex]} 
+                        alt="Wedding Galleri" 
+                        on:error={() => {
+                            console.error("Bilden kunde inte laddas:", images[currentIndex]);
+                            // Ta bort den trasiga bilden från den lokala listan
+                            const newImages = [...images];
+                            newImages.splice(currentIndex, 1);
+                            imageStore.set(newImages);
+                            
+                            // Om vi tog bort den sista bilden, gå till föregående
+                            if (currentIndex >= newImages.length && newImages.length > 0) {
+                                currentIndex = newImages.length - 1;
+                            }
+                        }}
+                    />
                     <button class="nav-btn prev" on:click={prevImage}>❮</button>
                     <button class="nav-btn next" on:click={nextImage}>❯</button>
                 </div>

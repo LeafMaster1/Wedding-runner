@@ -8,7 +8,7 @@ const BUCKET_NAME = 'wedding_images';
 
 // Lokala bilder från static/assets/gallery
 // @ts-ignore
-const localImages = Object.keys(import.meta.glob('/static/assets/gallery/*.{png,jpg,jpeg,webp}', { eager: true }))
+const localImages = Object.keys(import.meta.glob('/static/assets/gallery/*.{png,jpg,jpeg,webp,PNG,JPG,JPEG,WEBP}', { eager: true }))
     .map((path) => path.replace('/static', ''));
 
 export const fetchImages = async () => {
