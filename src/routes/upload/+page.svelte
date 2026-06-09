@@ -198,7 +198,7 @@
         {:else}
             <div class="success-msg">
                 <div class="icon">❤️</div>
-                <h2 class="subtitle">TACK!</h2>
+                <h2>TACK!</h2>
                 <p class="subtitle">
                     Din bild har skickats och kommer snart dyka upp i galleriet
                     i spelet.
@@ -273,6 +273,11 @@
     h1 {
         color: #e712d1;
         font-size: clamp(1.5rem, 5vh, 2.2rem);
+        margin-bottom: 0.5rem;
+    }
+    h2 {
+        color: #e712d1;
+        font-size: clamp(1.3rem, 5vh, 2rem);
         margin-bottom: 0.5rem;
     }
 
