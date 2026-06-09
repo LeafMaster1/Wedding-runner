@@ -198,8 +198,8 @@
         {:else}
             <div class="success-msg">
                 <div class="icon">❤️</div>
-                <h2>TACK!</h2>
-                <p>
+                <h2 class="subtitle">TACK!</h2>
+                <p class="subtitle">
                     Din bild har skickats och kommer snart dyka upp i galleriet
                     i spelet.
                 </p>
