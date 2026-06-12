@@ -488,7 +488,7 @@ export class Game extends Scene {
             if (this.player.body!.touching.down) {
                 const jumpPower = this.player.getData("isHighJumper")
                     ? -900
-                    : -800; // 600 orginal
+                    : -1200; // 600 orginal
                 this.player.setVelocityY(jumpPower);
             }
         });
