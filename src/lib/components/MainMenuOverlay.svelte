@@ -16,7 +16,7 @@
         <button class="btn" on:click={onPlay}> SPELA NU </button>
         <button class="btn" on:click={onShowSettings}> INSTÄLLNINGAR </button>
         <button class="btn" on:click={onShowHighscore}> HIGHSCORE </button>
-        <button class="btn" on:click={onShowPictures}> BILDER </button>
+        <!-- <button class="btn" on:click={onShowPictures}> BILDER </button> -->
     </footer>
 </div>
 
